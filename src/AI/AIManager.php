@@ -19,6 +19,10 @@ class AIManager extends Manager
 
     public function createOpenAIDriver()
     {
+        if (app()->runningInConsole() && str_contains(implode(' ', $_SERVER['argv'] ?? []), 'package:discover')) {
+            return null;
+        }
+
         $config = $this->config->get('elevate.ai.providers.openai', []);
         $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new OpenAIDriver($config);
@@ -26,6 +30,10 @@ class AIManager extends Manager
 
     public function createGeminiDriver()
     {
+        if (app()->runningInConsole() && str_contains(implode(' ', $_SERVER['argv'] ?? []), 'package:discover')) {
+            return null;
+        }
+
         $config = $this->config->get('elevate.ai.providers.gemini', []);
         $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new GeminiDriver($config);
@@ -33,6 +41,10 @@ class AIManager extends Manager
 
     public function createClaudeDriver()
     {
+        if (app()->runningInConsole() && str_contains(implode(' ', $_SERVER['argv'] ?? []), 'package:discover')) {
+            return null;
+        }
+
         $config = $this->config->get('elevate.ai.providers.claude', []);
         $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new ClaudeDriver($config);
@@ -40,6 +52,10 @@ class AIManager extends Manager
 
     public function createOllamaDriver()
     {
+        if (app()->runningInConsole() && str_contains(implode(' ', $_SERVER['argv'] ?? []), 'package:discover')) {
+            return null;
+        }
+
         $config = $this->config->get('elevate.ai.providers.ollama', []);
         $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new OllamaDriver($config);
