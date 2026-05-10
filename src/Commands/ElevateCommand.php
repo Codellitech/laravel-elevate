@@ -8,20 +8,20 @@ use Codellitech\Elevate\AI\AIManager;
 use Codellitech\Elevate\Rollback\GitSnapshot;
 use Codellitech\Elevate\Transformers\AITransformer;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\outro;
 use function Laravel\Prompts\spin;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\table;
-use function Laravel\Prompts\info;
 
 class ElevateCommand extends Command
 {
     protected $signature = 'elevate {--dry-run : Preview changes without applying them}';
     protected $description = 'Elevate your Laravel application to the next level with AI.';
 
-    protected array $versions = ['5.8', '6.0', '7.0', '8.0', '9.0', '10.0', '11.0', '12.0', '13.0'];
+    protected array $versions = ['5.8', '6.0', '7.0', '8.0', '9.0', '10.0', '11.0', '12.0', '13.0', '14.0'];
     protected array $actions_taken = [];
 
     public function handle()
@@ -40,7 +40,6 @@ class ElevateCommand extends Command
         $results = $scanner->scan();
         $this->showArchitectureSummary($results);
 
-        // 1. Select Mode
         $mode = $this->selectAction('What would you like to do?', [
             'modernize' => 'Modernize Existing Code (Refactor syntax & best practices)',
             'upgrade'   => 'Full Framework Upgrade (Move to a newer Laravel version)',
@@ -70,20 +69,18 @@ class ElevateCommand extends Command
 
         $ai = app(AIManager::class);
 
-        // 2. Perform Composer Upgrade if needed
         if ($mode === 'upgrade') {
             $this->spinAction("Updating composer.json for Laravel $targetVersion...", function () use ($targetVersion) {
                 $this->upgradeComposer($targetVersion);
             });
         }
 
-        // 3. Process Files
         $this->spinAction('Processing application files...', function () use ($results, $ai, $mode, $targetVersion) {
             $this->executeModernization($results, $ai, $mode, $targetVersion);
         });
 
         $this->displayFinalReport();
-        $this->outroAction('Elevation complete! Your application has been successfully transformed.');
+        $this->outroMessage('Elevation complete! Your application has been successfully transformed.');
         
         return 0;
     }
@@ -94,17 +91,10 @@ class ElevateCommand extends Command
         if (!File::exists($path)) return;
 
         $composer = json_decode(File::get($path), true);
-        
-        // Update Core
         $composer['require']['laravel/framework'] = "^$target";
         
-        // Update PHP requirement if moving to modern Laravel
-        if ((float)$target >= 10.0) {
-            $composer['require']['php'] = "^8.1|^8.2";
-        }
-        if ((float)$target >= 11.0) {
-            $composer['require']['php'] = "^8.2|^8.3";
-        }
+        if ((float)$target >= 10.0) $composer['require']['php'] = "^8.1|^8.2";
+        if ((float)$target >= 11.0) $composer['require']['php'] = "^8.2|^8.3";
 
         File::put($path, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         $this->actions_taken[] = ['Dependency', "Upgraded laravel/framework to ^$target", 'composer.json'];
@@ -115,17 +105,10 @@ class ElevateCommand extends Command
         $pathKeys = config('elevate.paths', ['app', 'config', 'database', 'resources', 'routes']);
         $files = [];
         
-        $pathMap = [
-            'app' => app_path(),
-            'config' => config_path(),
-            'database' => database_path(),
-            'resources' => resource_path(),
-            'routes' => base_path('routes'),
-            'tests' => base_path('tests'),
-        ];
-
         foreach ($pathKeys as $key) {
-            $path = $pathMap[$key] ?? base_path($key);
+            $path = base_path($key);
+            if ($key === 'app') $path = app_path();
+            
             if (File::isDirectory($path)) {
                 $files = array_merge($files, File::allFiles($path));
             } elseif (File::exists($path)) {
@@ -139,17 +122,11 @@ class ElevateCommand extends Command
             if ($this->shouldSkip($file)) continue;
             
             $content = File::get($file->getRealPath());
-            
-            // Specialized Upgrade Prompt
-            if ($mode === 'upgrade') {
-                $prompt = "Upgrade this Laravel file from version {$results['backend']['laravel_version']} to Laravel {$targetVersion}. " .
-                         "Handle all breaking changes, deprecated methods, and namespace updates correctly. " .
-                         "Preserve all existing business logic and UI exactly as is.";
-            } else {
-                $prompt = "Refactor this Laravel file using modern PHP 8.2+ features and Laravel best practices.";
-            }
+            $prompt = $mode === 'upgrade' 
+                ? "Upgrade this Laravel file from version {$results['backend']['laravel_version']} to Laravel {$targetVersion}."
+                : "Refactor this Laravel file using modern PHP 8.2+ features.";
 
-            $modernized = $ai->engine()->prompt($prompt . "\n\nCode:\n" . $content . "\n\nReturn ONLY the updated code.");
+            $modernized = $ai->engine()->prompt($prompt . "\n\nCode:\n" . $content . "\n\nReturn ONLY code.");
 
             if ($modernized && $modernized !== $content && !str_contains($modernized, 'Error:')) {
                 File::put($file->getRealPath(), $modernized);
@@ -161,9 +138,8 @@ class ElevateCommand extends Command
     protected function shouldSkip($file): bool
     {
         $excludes = config('elevate.exclude', ['vendor', 'node_modules', 'storage', 'bootstrap/cache']);
-        $path = $file->getRelativePathname();
         foreach ($excludes as $exclude) {
-            if (str_contains($path, $exclude)) return true;
+            if (str_contains($file->getRelativePathname(), $exclude)) return true;
         }
         return $file->getExtension() !== 'php';
     }
@@ -189,7 +165,6 @@ class ElevateCommand extends Command
             ['PHP Version', $results['backend']['php_version']],
             ['Controllers', $results['backend']['structure']['controllers_count']],
             ['Models', $results['backend']['structure']['models_count']],
-            ['Migrations', $results['backend']['structure']['migrations_count']],
         ];
         $this->tableAction(['Component', 'Current Value'], $rows);
     }
@@ -223,5 +198,14 @@ class ElevateCommand extends Command
     protected function tableAction($headers, $rows)
     {
         function_exists('Laravel\Prompts\table') ? table($headers, $rows) : $this->table($headers, $rows);
+    }
+
+    protected function outroMessage($message)
+    {
+        if (function_exists('Laravel\Prompts\outro')) {
+            outro($message);
+        } else {
+            $this->info($message);
+        }
     }
 }
