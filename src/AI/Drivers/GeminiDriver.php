@@ -9,25 +9,25 @@ use Exception;
 class GeminiDriver implements AIDriver
 {
     protected array $config;
-    protected Client $client;
 
     public function __construct(array $config)
     {
         $this->config = $config;
-        $this->client = new Client([
-            'base_uri' => 'https://generativelanguage.googleapis.com/v1beta/',
-            'timeout'  => $config['timeout'] ?? 60,
-            'verify'   => $config['verify_ssl'] ?? true,
-        ]);
     }
 
     public function prompt(string $prompt, array $options = []): string
     {
         try {
+            $client = new Client([
+                'base_uri' => 'https://generativelanguage.googleapis.com/v1beta/',
+                'timeout'  => $this->config['timeout'] ?? 60,
+                'verify'   => $this->config['verify_ssl'] ?? true,
+            ]);
+
             $apiKey = $this->config['api_key'];
             $model = $this->config['model'] ?? 'gemini-1.5-pro';
             
-            $response = $this->client->post("models/{$model}:generateContent?key={$apiKey}", [
+            $response = $client->post("models/{$model}:generateContent?key={$apiKey}", [
                 'json' => [
                     'contents' => [
                         [

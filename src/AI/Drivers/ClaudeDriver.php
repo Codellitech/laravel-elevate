@@ -9,31 +9,30 @@ use Exception;
 class ClaudeDriver implements AIDriver
 {
     protected array $config;
-    protected Client $client;
 
     public function __construct(array $config)
     {
         $this->config = $config;
-        $this->client = new Client([
-            'base_uri' => 'https://api.anthropic.com/v1/',
-            'timeout'  => $config['timeout'] ?? 60,
-            'verify'   => $config['verify_ssl'] ?? true,
-        ]);
     }
 
     public function prompt(string $prompt, array $options = []): string
     {
         try {
-            $response = $this->client->post('messages', [
+            $client = new Client([
+                'base_uri' => 'https://api.anthropic.com/v1/',
+                'timeout'  => $this->config['timeout'] ?? 60,
+                'verify'   => $this->config['verify_ssl'] ?? true,
+            ]);
+
+            $response = $client->post('messages', [
                 'headers' => [
-                    'x-api-key'         => $this->config['api_key'],
+                    'x-api-key' => $this->config['api_key'],
                     'anthropic-version' => '2023-06-01',
-                    'content-type'      => 'application/json',
                 ],
                 'json' => [
-                    'model'      => $this->config['model'] ?? 'claude-3-opus-20240229',
+                    'model' => $this->config['model'] ?? 'claude-3-opus-20240229',
                     'max_tokens' => 4096,
-                    'messages'   => [
+                    'messages' => [
                         ['role' => 'user', 'content' => $prompt],
                     ],
                     'temperature' => $options['temperature'] ?? 0.2,

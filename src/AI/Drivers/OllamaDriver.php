@@ -9,22 +9,22 @@ use Exception;
 class OllamaDriver implements AIDriver
 {
     protected array $config;
-    protected Client $client;
 
     public function __construct(array $config)
     {
         $this->config = $config;
-        $this->client = new Client([
-            'base_uri' => $config['host'] ?? 'http://localhost:11434',
-            'timeout'  => $config['timeout'] ?? 300,
-            'verify'   => $config['verify_ssl'] ?? true,
-        ]);
     }
 
     public function prompt(string $prompt, array $options = []): string
     {
         try {
-            $response = $this->client->post('/api/generate', [
+            $client = new Client([
+                'base_uri' => $this->config['host'] ?? 'http://localhost:11434',
+                'timeout'  => $this->config['timeout'] ?? 300,
+                'verify'   => $this->config['verify_ssl'] ?? true,
+            ]);
+
+            $response = $client->post('/api/generate', [
                 'json' => [
                     'model' => $this->config['model'] ?? 'deepseek-coder',
                     'prompt' => $prompt,

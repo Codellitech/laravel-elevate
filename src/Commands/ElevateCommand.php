@@ -13,8 +13,9 @@ class ElevateCommand extends Command
     protected $signature = 'elevate {--dry-run : Preview changes without applying them}';
     protected $description = 'Elevate your Laravel application to the next level with AI.';
 
-    public function handle(ProjectScanner $scanner, AIManager $ai, GitSnapshot $git)
+    public function handle(ProjectScanner $scanner, GitSnapshot $git)
     {
+        $ai = app(AIManager::class);
         $this->displayBranding();
 
         if (!$git->hasGit()) {

@@ -32,7 +32,6 @@ class AIManager extends Manager
 
     protected function createOpenAIDriver()
     {
-        if ($this->isDiscovery()) return null;
         $config = $this->config->get('elevate.ai.providers.openai', []);
         $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new OpenAIDriver($config);
@@ -40,7 +39,6 @@ class AIManager extends Manager
 
     protected function createGeminiDriver()
     {
-        if ($this->isDiscovery()) return null;
         $config = $this->config->get('elevate.ai.providers.gemini', []);
         $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new GeminiDriver($config);
@@ -48,7 +46,6 @@ class AIManager extends Manager
 
     protected function createClaudeDriver()
     {
-        if ($this->isDiscovery()) return null;
         $config = $this->config->get('elevate.ai.providers.claude', []);
         $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new ClaudeDriver($config);
@@ -56,7 +53,6 @@ class AIManager extends Manager
 
     protected function createOllamaDriver()
     {
-        if ($this->isDiscovery()) return null;
         $config = $this->config->get('elevate.ai.providers.ollama', []);
         $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new OllamaDriver($config);
@@ -64,7 +60,6 @@ class AIManager extends Manager
 
     protected function createOpenRouterDriver()
     {
-        if ($this->isDiscovery()) return null;
         $config = $this->config->get('elevate.ai.providers.openrouter', []);
         $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new OpenRouterDriver($config);
@@ -72,7 +67,6 @@ class AIManager extends Manager
 
     protected function createDeepSeekDriver()
     {
-        if ($this->isDiscovery()) return null;
         $config = $this->config->get('elevate.ai.providers.deepseek', []);
         $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new OpenAIDriver(array_merge($config, [
@@ -82,19 +76,10 @@ class AIManager extends Manager
 
     protected function createGroqDriver()
     {
-        if ($this->isDiscovery()) return null;
         $config = $this->config->get('elevate.ai.providers.groq', []);
         $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new OpenAIDriver(array_merge($config, [
             'base_uri' => 'https://api.groq.com/openai/v1/'
         ]));
-    }
-
-    protected function isDiscovery(): bool
-    {
-        if (!app()->runningInConsole()) return false;
-        $argv = $_SERVER['argv'] ?? [];
-        $command = implode(' ', $argv);
-        return str_contains($command, 'package:discover') || str_contains($command, 'vendor:publish');
     }
 }

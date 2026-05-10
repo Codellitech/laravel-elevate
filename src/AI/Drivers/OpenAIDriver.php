@@ -9,29 +9,29 @@ use Exception;
 class OpenAIDriver implements AIDriver
 {
     protected array $config;
-    protected Client $client;
 
     public function __construct(array $config)
     {
         $this->config = $config;
-        $this->client = new Client([
-            'base_uri' => $config['base_uri'] ?? 'https://api.openai.com/v1/',
-            'timeout'  => $config['timeout'] ?? 60,
-            'verify'   => $config['verify_ssl'] ?? true,
-        ]);
     }
 
     public function prompt(string $prompt, array $options = []): string
     {
         try {
-            $response = $this->client->post('chat/completions', [
+            $client = new Client([
+                'base_uri' => $this->config['base_uri'] ?? 'https://api.openai.com/v1/',
+                'timeout'  => $this->config['timeout'] ?? 60,
+                'verify'   => $this->config['verify_ssl'] ?? true,
+            ]);
+
+            $response = $client->post('chat/completions', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->config['api_key'],
-                    'Content-Type'  => 'application/json',
                 ],
                 'json' => [
                     'model' => $this->config['model'] ?? 'gpt-4-turbo',
                     'messages' => [
+                        ['role' => 'system', 'content' => 'You are an expert Laravel architect.'],
                         ['role' => 'user', 'content' => $prompt],
                     ],
                     'temperature' => $options['temperature'] ?? 0.2,
