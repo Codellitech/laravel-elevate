@@ -5,9 +5,7 @@
     <strong>The Total AI Transformation & Migration Platform for Laravel</strong>
 </p>
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Codellitech/laravel-elevate/main/art/terminal.jpg" width="800" alt="Laravel Elevate Terminal">
-</p>
+![Laravel Elevate Terminal](art/terminal.jpg)
 
 <p align="center">
     <a href="https://packagist.org/packages/codellitech/laravel-elevate"><img src="https://img.shields.io/packagist/v/codellitech/laravel-elevate.svg?style=for-the-badge" alt="Latest Version on Packagist"></a>
