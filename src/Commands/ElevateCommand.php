@@ -161,11 +161,15 @@ class ElevateCommand extends Command
             $type = str_contains($file->getRelativePathname(), 'migrations') ? 'Migration' : 'File';
             
             $prompt = $mode === 'upgrade' 
-                ? "Upgrade this Laravel $type from version {$results['backend']['laravel_version']} to Laravel {$targetVersion}. " .
-                  "Ensure all deprecated methods are replaced and structure matches Laravel {$targetVersion} standards."
-                : "Refactor this Laravel file using modern PHP 8.2+ features.";
+                ? "Upgrade this Laravel file from version {$results['backend']['laravel_version']} to Laravel {$targetVersion}. " .
+                  "1. Replace all deprecated methods and syntax. " .
+                  "2. Follow Spatie and PSR-12 industry standards for clean code. " .
+                  "3. CRITICAL: RETAIN ALL EXISTING COMMENTS exactly as they are."
+                : "Refactor this Laravel file using modern PHP 8.2+ features. " .
+                  "1. Apply PSR-12 and Spatie coding standards. " .
+                  "2. CRITICAL: RETAIN ALL EXISTING COMMENTS exactly as they are.";
 
-            $modernized = $ai->engine()->prompt($prompt . "\n\nCode:\n" . $content . "\n\nReturn ONLY code.");
+            $modernized = $ai->engine()->prompt($prompt . "\n\nCode:\n" . $content . "\n\nReturn ONLY code without explanation.");
 
             if ($modernized && $modernized !== $content && !str_contains($modernized, 'Error:')) {
                 File::put($file->getRealPath(), $modernized);
