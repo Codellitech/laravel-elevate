@@ -92,6 +92,12 @@ composer update -W
 - **Website**: [codellitech.in](https://codellitech.in)
 - **Support**: [info@codellitech.in](mailto:info@codellitech.in) | [codellitech@gmail.com](mailto:codellitech@gmail.com)
 
+### 👨‍💻 Main Contributor
+
+**Srikanth**  
+*Full Stack Developer*  
+[LinkedIn](https://www.linkedin.com/in/sri0403) | [Instagram](https://www.instagram.com/srikanth69653)
+
 ---
 
 ## 📄 License
