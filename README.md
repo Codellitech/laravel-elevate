@@ -8,6 +8,11 @@
 composer require codellitech/laravel-elevate
 ```
 
+## Requirements
+
+- **PHP**: ^8.2 (Required for AI and modern CLI features)
+- **Laravel**: ^5.0 | ^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0 | ^11.0 | ^12.0
+
 ## Configuration
 
 Publish the configuration file:

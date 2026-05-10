@@ -7,15 +7,6 @@ use Illuminate\Support\Facades\File;
 use Codellitech\Elevate\Scanners\ProjectScanner;
 use Codellitech\Elevate\AI\AIManager;
 use Codellitech\Elevate\Rollback\GitSnapshot;
-use function Laravel\Prompts\intro;
-use function Laravel\Prompts\outro;
-use function Laravel\Prompts\spin;
-use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\info;
-use function Laravel\Prompts\table;
-use function Laravel\Prompts\progress;
-use function Laravel\Prompts\warning;
-use function Laravel\Prompts\note;
 
 class ElevateCommand extends Command
 {

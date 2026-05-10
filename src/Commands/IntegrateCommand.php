@@ -4,10 +4,6 @@ namespace Codellitech\Elevate\Commands;
 
 use Illuminate\Console\Command;
 use Codellitech\Elevate\Integrations\WhatsAppOTPIntegration;
-use function Laravel\Prompts\select;
-use function Laravel\Prompts\intro;
-use function Laravel\Prompts\outro;
-use function Laravel\Prompts\spin;
 
 class IntegrateCommand extends Command
 {
@@ -16,24 +12,58 @@ class IntegrateCommand extends Command
 
     public function handle(WhatsAppOTPIntegration $whatsapp)
     {
-        intro('Elevate Integration Engine');
+        $this->introAction('Elevate Integration Engine');
 
-        $module = $this->argument('module') ?: select(
-            'Which module would you like to integrate?',
-            [
-                'whatsapp-otp' => 'WhatsApp OTP Authentication',
-                'rbac' => 'Role Based Access Control',
-                'audit-trails' => 'Audit Trails & Activity Logs',
-            ]
-        );
+        $options = [
+            'whatsapp-otp' => 'WhatsApp OTP Authentication',
+            'rbac' => 'Role Based Access Control',
+            'audit-trails' => 'Audit Trails & Activity Logs',
+        ];
+
+        $module = $this->argument('module');
+
+        if (!$module) {
+            if (function_exists('Laravel\Prompts\select')) {
+                $module = \Laravel\Prompts\select('Which module would you like to integrate?', $options);
+            } else {
+                $module = $this->choice('Which module would you like to integrate?', $options, 'whatsapp-otp');
+            }
+        }
 
         if ($module === 'whatsapp-otp') {
-            spin(
+            $this->spinAction(
                 fn () => $whatsapp->install(),
                 'Installing WhatsApp OTP module...'
             );
         }
 
-        outro("Integration of {$module} complete!");
+        $this->outroAction("Integration of {$module} complete!");
+    }
+
+    protected function introAction(string $message)
+    {
+        if (function_exists('Laravel\Prompts\intro')) {
+            \Laravel\Prompts\intro($message);
+        } else {
+            $this->info($message);
+        }
+    }
+
+    protected function outroAction(string $message)
+    {
+        if (function_exists('Laravel\Prompts\outro')) {
+            \Laravel\Prompts\outro($message);
+        } else {
+            $this->info($message);
+        }
+    }
+
+    protected function spinAction(\Closure $callback, string $message)
+    {
+        if (function_exists('Laravel\Prompts\spin')) {
+            return \Laravel\Prompts\spin($callback, $message);
+        }
+        $this->info($message);
+        return $callback();
     }
 }
