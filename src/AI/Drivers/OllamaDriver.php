@@ -17,7 +17,7 @@ class OllamaDriver implements AIDriver
         $this->client = new Client([
             'base_uri' => $config['host'] ?? 'http://localhost:11434',
             'timeout'  => $config['timeout'] ?? 300,
-            'verify'   => config('elevate.ai.verify_ssl', true),
+            'verify'   => $config['verify_ssl'] ?? true,
         ]);
     }
 

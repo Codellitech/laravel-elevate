@@ -19,25 +19,29 @@ class AIManager extends Manager
 
     public function createOpenAIDriver()
     {
-        $config = $this->config->get('elevate.ai.providers.openai');
+        $config = $this->config->get('elevate.ai.providers.openai', []);
+        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new OpenAIDriver($config);
     }
 
     public function createGeminiDriver()
     {
-        $config = $this->config->get('elevate.ai.providers.gemini');
+        $config = $this->config->get('elevate.ai.providers.gemini', []);
+        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new GeminiDriver($config);
     }
 
     public function createClaudeDriver()
     {
-        $config = $this->config->get('elevate.ai.providers.claude');
+        $config = $this->config->get('elevate.ai.providers.claude', []);
+        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new ClaudeDriver($config);
     }
 
     public function createOllamaDriver()
     {
-        $config = $this->config->get('elevate.ai.providers.ollama');
+        $config = $this->config->get('elevate.ai.providers.ollama', []);
+        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
         return new OllamaDriver($config);
     }
 

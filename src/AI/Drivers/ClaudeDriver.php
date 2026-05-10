@@ -17,7 +17,7 @@ class ClaudeDriver implements AIDriver
         $this->client = new Client([
             'base_uri' => 'https://api.anthropic.com/v1/',
             'timeout'  => $config['timeout'] ?? 60,
-            'verify'   => config('elevate.ai.verify_ssl', true),
+            'verify'   => $config['verify_ssl'] ?? true,
         ]);
     }
 

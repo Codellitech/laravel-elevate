@@ -17,7 +17,7 @@ class OpenAIDriver implements AIDriver
         $this->client = new Client([
             'base_uri' => $config['base_uri'] ?? 'https://api.openai.com/v1/',
             'timeout'  => $config['timeout'] ?? 60,
-            'verify'   => config('elevate.ai.verify_ssl', true),
+            'verify'   => $config['verify_ssl'] ?? true,
         ]);
     }
 
