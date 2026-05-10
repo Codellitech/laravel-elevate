@@ -1,6 +1,6 @@
 <h1 align="center">
     <b>Laravel Elevate</b><br>
-    <small><b>by Codelli Technologies</b></small>
+    <span style="font-size: 0.6em;">Developed by Codelli Technologies</span>
 </h1>
 
 <p align="center">
