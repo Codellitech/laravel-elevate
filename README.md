@@ -1,117 +1,114 @@
-# Laravel Elevate
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Codellitech/laravel-elevate/main/art/logo.png" width="400" alt="Laravel Elevate Logo">
+</p>
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/codellitech/laravel-elevate.svg?style=flat-square)](https://packagist.org/packages/codellitech/laravel-elevate)
-[![Total Downloads](https://img.shields.io/packagist/dt/codellitech/laravel-elevate.svg?style=flat-square)](https://packagist.org/packages/codellitech/laravel-elevate)
-[![License](https://img.shields.io/packagist/l/codellitech/laravel-elevate.svg?style=flat-square)](https://packagist.org/packages/codellitech/laravel-elevate)
+<h1 align="center">Laravel Elevate</h1>
 
-**Laravel Elevate** is an enterprise-grade autonomous modernization and upgrade platform. Powered by state-of-the-art AI, it automatically refactors legacy code, upgrades Laravel versions, and integrates advanced enterprise features with zero manual effort.
+<p align="center">
+    <strong>Autonomous AI-Driven Modernization & Enterprise Expansion Platform</strong>
+</p>
 
----
-
-## 🚀 Key Features
-
-- **AI-Driven Modernization**: Automatically refactor legacy PHP/Laravel syntax to modern standards.
-- **Deep Project Scanning**: Intelligent analysis of backend, frontend, and infrastructure stacks.
-- **Enterprise Integrations**: One-command injection of complex modules (e.g., WhatsApp OTP, RBAC).
-- **Universal Compatibility**: Supports Laravel versions from **5.0 all the way to 12.0+**.
-- **Safety First**: Built-in Git-based snapshot and rollback engine for non-destructive upgrades.
-- **Multi-AI Support**: Works with OpenAI, Claude, Gemini, DeepSeek, Groq, Ollama, and more.
+<p align="center">
+    <a href="https://packagist.org/packages/codellitech/laravel-elevate"><img src="https://img.shields.io/packagist/v/codellitech/laravel-elevate.svg?style=for-the-badge" alt="Latest Version on Packagist"></a>
+    <a href="https://packagist.org/packages/codellitech/laravel-elevate"><img src="https://img.shields.io/packagist/dt/codellitech/laravel-elevate.svg?style=for-the-badge" alt="Total Downloads"></a>
+    <a href="https://packagist.org/packages/codellitech/laravel-elevate"><img src="https://img.shields.io/packagist/l/codellitech/laravel-elevate.svg?style=for-the-badge" alt="License"></a>
+</p>
 
 ---
 
-## 📦 Installation
+## 💎 Why Laravel Elevate?
 
-Install the package via Composer:
+Maintaining legacy Laravel applications is expensive, time-consuming, and risky. **Laravel Elevate** changes the game by bringing autonomous AI to your terminal. It doesn't just scan; it **refactors**, **upgrades**, and **expands** your application with enterprise-grade precision.
+
+### 🌟 Features that Win Trust:
+- **🤖 AI-First Engine**: Uses state-of-the-art LLMs (Gemini 1.5 Pro, GPT-4, Claude 3) to rewrite code intelligently.
+- **⚡ Universal Bridge**: Instantly upgrade code from Laravel 5.x to 12.x without breaking a sweat.
+- **🛡️ Safety Snapshot**: Automatic Git-based rollback system. If the AI makes a mistake, one command brings everything back.
+- **🏗️ Enterprise Modules**: Automatically inject complex features like WhatsApp OTP, RBAC, and Audit Trails in seconds.
+- **🔍 Deep Insights**: Comprehensive project scanning for backend, frontend, and infrastructure stacks.
+
+---
+
+## 🛠️ Installation
+
+Elevate your project in seconds:
 
 ```bash
 composer require codellitech/laravel-elevate
 ```
 
-### Requirements
-
-- **PHP**: ^8.2 (Required for AI and modern CLI features)
-- **Laravel**: ^5.0 | ^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0 | ^11.0 | ^12.0
+### System Requirements
+- **PHP**: 8.2 or higher
+- **Laravel**: 5.0 through 12.x (Universal Support)
+- **Git**: Required for safety snapshots
 
 ---
 
-## ⚙️ Configuration
+## ⚙️ Quick Start
 
-### 1. Publish Configuration
+### 1. Configure your AI
+Publish the configuration and add your API keys to `.env`:
+
 ```bash
 php artisan vendor:publish --tag="elevate-config"
 ```
 
-### 2. Configure Environment (.env)
-Add your preferred AI provider keys to your `.env` file:
-
 ```env
-# Primary AI Provider (openai, gemini, claude, deepseek, etc.)
+# Choose your brain: gemini, openai, claude, deepseek, ollama
 ELEVATE_AI_PROVIDER=gemini
+GEMINI_API_KEY=your_key_here
 
-# Google Gemini (Highly Recommended)
-GEMINI_API_KEY=your_gemini_key_here
-
-# OpenAI
-OPENAI_API_KEY=your_openai_key_here
-
-# Anthropic Claude
-ANTHROPIC_API_KEY=your_anthropic_key_here
-
-# DeepSeek
-DEEPSEEK_API_KEY=your_deepseek_key_here
-
-# Local Development (WAMP/Windows)
-# If you get SSL certificate errors on local, set this to false:
+# For Local Development (WAMP/Windows)
 ELEVATE_SSL_VERIFY=false
 ```
 
----
-
-## 🎮 Usage
-
-### Modernize Your Application
-Analyze your entire codebase and apply AI-driven refactoring:
+### 2. Run the Modernizer
+Experience the magic of AI-driven refactoring:
 ```bash
 php artisan elevate
 ```
-*Use `--dry-run` to see proposed changes without applying them.*
 
-### Integrate Enterprise Modules
-Inject pre-built, production-ready modules into your app:
+### 3. Inject Features
+Need WhatsApp OTP? Don't code it, **Elevate** it:
 ```bash
-php artisan elevate:integrate
-```
-Available modules include:
-- `whatsapp-otp`: Automated WhatsApp OTP authentication system.
-- `rbac`: Role-Based Access Control (Coming Soon).
-- `audit-trails`: System-wide activity logging (Coming Soon).
-
-### Safety & Rollback
-If you are unhappy with the AI changes, you can instantly revert to the pre-elevation state:
-```bash
-php artisan elevate:rollback
+php artisan elevate:integrate whatsapp-otp
 ```
 
 ---
 
-## 🛡️ Security & Safety
-- **Git Snapshots**: Before any modification, Elevate creates a temporary Git branch (`elevate-backup-TIMESTAMP`).
-- **Non-Destructive**: AI only modifies files within your configured `paths` (default: `app`, `routes`, `config`, etc.).
-- **Excluded Paths**: Directories like `vendor` and `node_modules` are automatically ignored.
+## 📖 Available Commands
+
+| Command | Purpose |
+| --- | --- |
+| `php artisan elevate` | **Modernize**: Scans and refactors legacy code to modern standards. |
+| `php artisan elevate:integrate` | **Expand**: Automatically injects enterprise modules and integrations. |
+| `php artisan elevate:rollback` | **Safety**: Instantly reverts the codebase to the pre-elevation state. |
 
 ---
 
-## 🤝 Support & Contribution
+## 🔒 Security & Peace of Mind
 
-Built with ❤️ by **[Codelli Technologies](https://codellitech.in)**.
+We know your codebase is your most valuable asset. That's why Elevate follows a **Safety-First** philosophy:
+1. **Snapshots**: Every run creates a new Git branch.
+2. **Dry Run**: Use `--dry-run` to see exactly what the AI will change before it touches a single line.
+3. **Reasoning**: After every modification, the AI provides a reasoning report explaining *why* it made the changes.
+
+---
+
+## 🏢 About Codelli Technologies
+
+**Laravel Elevate** is an open-source initiative by **Codelli Technologies**. We specialize in high-end enterprise software, AI systems engineering, and DevOps architecture.
 
 - **Website**: [codellitech.in](https://codellitech.in)
-- **Email**: [info@codellitech.in](mailto:info@codellitech.in)
-- **Support**: +91 91772 01462
-
-For bugs and feature requests, please [open an issue on GitHub](https://github.com/Codellitech/laravel-elevate/issues).
+- **Twitter**: [@Codellitech](https://twitter.com/Codellitech)
+- **Support**: [info@codellitech.in](mailto:info@codellitech.in)
 
 ---
 
 ## 📄 License
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+<p align="center">
+  <br>
+  Built with ❤️ for the Laravel Community.
+</p>
