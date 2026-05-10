@@ -27,12 +27,18 @@
 
 Upgrading legacy Laravel applications is no longer just a refactor—it's a **Transformation**. **Laravel Elevate** is an autonomous migration engine that rebuilds your project's structure, dependencies, and code for the modern era.
 
+---
+
+> [!NOTE]
+> **Status**: This project is under **Active Development**. We are continuously adding new AI transformation rules and enterprise modules to help you elevate your application faster.
+
 ### 🌟 Total Transformation Features:
-- **🏗️ Structural Alignment**: Intelligently moves files and updates architecture to match new Laravel standards (e.g., Laravel 11's slim structure).
+- **🏗️ Structural Alignment**: Intelligently moves files and updates architecture to match new Laravel standards.
 - **🚀 Target Upgrade Engine**: Choose any target version and watch the AI handle the breaking changes.
 - **📦 Dependency Intelligence**: Scans and upgrades your entire `composer.json` stack for full compatibility.
 - **🛡️ Safety Snapshot**: Built-in Git-based snapshots with a comprehensive **Elevation Report** and a celebratory "WOOHOO!" finish.
 - **🤖 Context-Aware AI**: Specifically handles Migrations, Models, and Controllers with version-specific precision.
+- **⚡ Enterprise Modules**: One-click integrations for WhatsApp OTP, with RBAC, SaaS Subscriptions, and Admin Panels coming soon.
 
 ---
 

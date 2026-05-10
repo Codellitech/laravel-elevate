@@ -5,48 +5,104 @@ namespace Codellitech\Elevate\Commands;
 use Illuminate\Console\Command;
 use Codellitech\Elevate\Integrations\WhatsAppOTPIntegration;
 use function Laravel\Prompts\select;
-use function Laravel\Prompts\spin;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\table;
+use function Laravel\Prompts\outro;
 
 class IntegrateCommand extends Command
 {
     protected $signature = 'elevate:integrate';
-    protected $description = 'Integrate enterprise modules into your Laravel application.';
+    protected $description = 'Inject enterprise-grade modules into your Laravel application.';
+
+    protected array $actions_taken = [];
 
     public function handle()
     {
-        $module = $this->selectAction('Select the module to integrate', [
-            'whatsapp-otp' => 'WhatsApp OTP Authentication',
-            'rbac' => 'Role Based Access Control (Coming Soon)',
+        $this->displayBranding();
+
+        $module = $this->selectAction('Select the module to integrate:', [
+            'whatsapp-otp' => 'WhatsApp OTP Authentication (Ready)',
+            'rbac'         => 'Role Based Access Control (Coming Soon)',
+            'stripe-saas'  => 'Stripe SaaS Subscription (Coming Soon)',
+            'socialite'    => 'Socialite (Google/GitHub Logins) (Coming Soon)',
+            'filament'     => 'Filament Admin Panel (Coming Soon)',
+            'audit-logs'   => 'Activity & Audit Logging (Coming Soon)',
+            'livewire-ui'  => 'Livewire Dashboard Suite (Coming Soon)',
         ]);
 
-        if ($module === 'whatsapp-otp') {
-            $this->spinAction('Integrating WhatsApp OTP...', function () {
-                $integration = app(WhatsAppOTPIntegration::class);
-                $integration->install();
-            });
+        if (str_contains($module, '(Coming Soon)') || $module !== 'whatsapp-otp') {
+            $this->warn("The {$module} module is currently in development. Stay tuned!");
+            return 0;
+        }
 
-            $this->info('WhatsApp OTP integrated successfully!');
+        $integration = new WhatsAppOTPIntegration();
+        
+        $this->info("Integrating WhatsApp OTP...");
+        
+        if ($integration->install()) {
+            $this->recordActions();
+            $this->displayIntegrationReport();
+            $this->displayNextSteps();
+            $this->celebrate();
         }
 
         return 0;
     }
 
-    protected function selectAction($message, $options)
+    protected function recordActions()
     {
-        if (function_exists('Laravel\Prompts\select')) {
-            return select($message, $options);
-        } else {
-            return $this->choice($message, array_values($options), array_key_first($options));
-        }
+        $this->actions_taken = [
+            ['Migration', 'database/migrations/xxxx_create_whatsapp_otps_table.php', 'Created'],
+            ['Controller', 'app/Http/Controllers/Auth/WhatsAppOTPController.php', 'Created'],
+            ['Model', 'app/Models/WhatsAppOTP.php', 'Created'],
+            ['Routes', 'routes/api.php', 'Updated'],
+        ];
     }
 
-    protected function spinAction($message, $callback)
+    protected function displayIntegrationReport()
     {
-        if (function_exists('Laravel\Prompts\spin')) {
-            return spin($callback, $message);
-        } else {
-            $this->info($message . ' (please wait)');
-            return $callback();
-        }
+        $this->line("\n" . str_repeat('━', 72));
+        $this->line('                          INTEGRATION REPORT');
+        $this->line(str_repeat('━', 72));
+        
+        $this->tableAction(['Area', 'Target/Action', 'Status'], $this->actions_taken);
+        $this->line('');
+    }
+
+    protected function displayNextSteps()
+    {
+        $this->info("👉 NEXT STEPS TO ACTIVATE:");
+        $this->line("1. Run: php artisan migrate");
+        $this->line("2. Add your WhatsApp API credentials to .env");
+        $this->line("3. Review the routes in routes/api.php");
+        $this->line("");
+    }
+
+    protected function celebrate()
+    {
+        $this->line(str_repeat('✧', 72));
+        $this->line('   WOOHOO! THE MODULE HAS BEEN SUCCESSFULLY INTEGRATED! 🚀');
+        $this->line('   Your application just got more powerful.');
+        $this->line(str_repeat('✧', 72));
+        $this->line('');
+    }
+
+    protected function displayBranding()
+    {
+        $this->line(str_repeat('━', 72));
+        $this->line('               LARAVEL ELEVATE by Codelli Technologies');
+        $this->line('                   Module Integration Engine');
+        $this->line(str_repeat('━', 72));
+        $this->line('');
+    }
+
+    protected function selectAction($message, $options)
+    {
+        return function_exists('Laravel\Prompts\select') ? select($message, $options) : $this->choice($message, array_values($options), array_key_first($options));
+    }
+
+    protected function tableAction($headers, $rows)
+    {
+        function_exists('Laravel\Prompts\table') ? table($headers, $rows) : $this->table($headers, $rows);
     }
 }
