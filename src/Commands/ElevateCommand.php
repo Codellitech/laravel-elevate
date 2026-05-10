@@ -154,6 +154,12 @@ class ElevateCommand extends Command
             $this->info('No changes were necessary.');
         } else {
             $this->tableAction(['Type', 'Target/Action', 'Status'], $this->actions_taken);
+            
+            // Helpful instruction for major upgrades
+            if (collect($this->actions_taken)->contains(fn($a) => str_contains($a[1], 'Upgraded laravel/framework'))) {
+                $this->warn("\n[!] Framework upgrade detected in composer.json.");
+                $this->info("Please run: composer update -W  to finalize the installation.");
+            }
         }
         $this->line('');
     }
