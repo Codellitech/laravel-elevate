@@ -49,7 +49,7 @@ class AIManager extends Manager
 
     public function createDeepSeekDriver()
     {
-        $config = $this->config->get('elevate.ai.providers.deepseek');
+        $config = $this->config->get('elevate.ai.providers.deepseek', []);
         return new OpenAIDriver(array_merge($config, [
             'base_uri' => 'https://api.deepseek.com/v1/'
         ]));
@@ -57,7 +57,7 @@ class AIManager extends Manager
 
     public function createGroqDriver()
     {
-        $config = $this->config->get('elevate.ai.providers.groq');
+        $config = $this->config->get('elevate.ai.providers.groq', []);
         return new OpenAIDriver(array_merge($config, [
             'base_uri' => 'https://api.groq.com/openai/v1/'
         ]));
@@ -65,7 +65,7 @@ class AIManager extends Manager
 
     public function createMistralDriver()
     {
-        $config = $this->config->get('elevate.ai.providers.mistral');
+        $config = $this->config->get('elevate.ai.providers.mistral', []);
         return new OpenAIDriver(array_merge($config, [
             'base_uri' => 'https://api.mistral.ai/v1/'
         ]));
@@ -73,7 +73,7 @@ class AIManager extends Manager
 
     public function createCohereDriver()
     {
-        $config = $this->config->get('elevate.ai.providers.cohere');
+        $config = $this->config->get('elevate.ai.providers.cohere', []);
         return new OpenAIDriver(array_merge($config, [
             'base_uri' => 'https://api.cohere.ai/v1/'
         ]));
