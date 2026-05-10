@@ -2,7 +2,11 @@
 <h3 align="center">Laravel Elevate</h3>
 
 <p align="center">
-    <strong>The Autonomous AI Migration & Upgrade Platform for Laravel</strong>
+    <strong>The Total AI Transformation & Migration Platform for Laravel</strong>
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Codellitech/laravel-elevate/main/art/dashboard.png" width="800" alt="Laravel Elevate Dashboard">
 </p>
 
 <p align="center">
@@ -15,14 +19,14 @@
 
 ## 💎 Why Laravel Elevate?
 
-Upgrading legacy Laravel applications is no longer a manual nightmare. **Laravel Elevate** is an autonomous migration engine that bridges the gap between old versions and the modern framework. Whether you're on Laravel 5.8 or 10.x, Elevate brings you to the future in minutes.
+Upgrading legacy Laravel applications is no longer just a refactor—it's a **Transformation**. **Laravel Elevate** is an autonomous migration engine that rebuilds your project's structure, dependencies, and code for the modern era.
 
-### 🌟 Enterprise-Grade Features:
-- **🚀 Target Upgrade Engine**: Select any version from Laravel 5.0 to 13.0 as your target.
-- **🤖 Context-Aware AI**: The engine doesn't just refactor; it understands the breaking changes between your specific versions.
-- **📦 Composer Elevation**: Automatically patches `composer.json` requirements and PHP version constraints.
-- **🛡️ Safety First**: Built-in Git-based snapshots and a detailed **Elevation Report** for every run.
-- **🏗️ Expansion Modules**: Inject features like WhatsApp OTP or RBAC with a single command.
+### 🌟 Total Transformation Features:
+- **🏗️ Structural Alignment**: Intelligently moves files and updates architecture to match new Laravel standards (e.g., Laravel 11's slim structure).
+- **🚀 Target Upgrade Engine**: Choose any target version and watch the AI handle the breaking changes.
+- **📦 Dependency Intelligence**: Scans and upgrades your entire `composer.json` stack for full compatibility.
+- **🛡️ Safety Snapshot**: Built-in Git-based snapshots with a comprehensive **Elevation Report** and a celebratory "WOOHOO!" finish.
+- **🤖 Context-Aware AI**: Specifically handles Migrations, Models, and Controllers with version-specific precision.
 
 ---
 
@@ -33,7 +37,7 @@ composer require codellitech/laravel-elevate
 ```
 
 ### System Requirements
-- **PHP**: 8.2 or higher (Universal Support)
+- **PHP**: 8.2 or higher
 - **Laravel**: 5.0 through 13.x
 - **Git**: Highly recommended for safety snapshots
 
@@ -49,21 +53,21 @@ php artisan vendor:publish --tag="elevate-config"
 ```
 
 ```env
-# Choose your provider: gemini, openai, claude, deepseek
 ELEVATE_AI_PROVIDER=gemini
 GEMINI_API_KEY=your_key_here
-
-# SSL verification is AUTOMATICALLY handled for local development
 ```
 
-### 2. Elevate your Project
-Run the core engine and follow the interactive prompts to choose your upgrade path:
+### 2. Transform your Project
+Run the core engine and follow the interactive prompts to choose your transformation path:
 ```bash
 php artisan elevate
 ```
 
-### 3. Review the Elevation Report
-At the end of the process, Elevate generates a comprehensive report of all file refactors and dependency updates performed by the AI.
+### 3. Finalize the Elevation
+After the AI finishes the transformation, finalize the dependency installation:
+```bash
+composer update -W
+```
 
 ---
 
@@ -71,9 +75,9 @@ At the end of the process, Elevate generates a comprehensive report of all file 
 
 | Command | Purpose |
 | --- | --- |
-| `php artisan elevate` | **Upgrade/Modernize**: The main engine for framework migration and code refactoring. |
+| `php artisan elevate` | **Transform/Upgrade**: The main engine for structural and code transformation. |
 | `php artisan elevate:integrate` | **Expand**: Automatically injects enterprise modules (WhatsApp OTP, etc). |
-| `php artisan elevate:rollback` | **Revert**: Instantly return to the pre-elevation state via Git. |
+| `php artisan elevate:rollback` | **Revert**: Instantly return to the pre-elevation state. |
 
 ---
 

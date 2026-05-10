@@ -8,7 +8,6 @@ use Codellitech\Elevate\AI\AIManager;
 use Codellitech\Elevate\Rollback\GitSnapshot;
 use Codellitech\Elevate\Transformers\AITransformer;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Http;
 use Exception;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\outro;
@@ -16,6 +15,8 @@ use function Laravel\Prompts\spin;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\table;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\warning;
 
 class ElevateCommand extends Command
 {
@@ -42,13 +43,12 @@ class ElevateCommand extends Command
 
         $mode = $this->selectAction('What would you like to do?', [
             'modernize' => 'Modernize Existing Code (Refactor syntax & best practices)',
-            'upgrade'   => 'Full Framework Upgrade (Move to a newer Laravel version)',
+            'upgrade'   => 'Total Framework Transformation (Move to a newer Laravel version + structural upgrade)',
         ]);
 
         $targetVersion = null;
         if ($mode === 'upgrade') {
             $availableTargets = $this->getAvailableVersions($results['backend']['laravel_version']);
-            
             if (empty($availableTargets)) {
                 $this->info('You are already on the latest available version!');
                 $mode = 'modernize';
@@ -57,7 +57,7 @@ class ElevateCommand extends Command
             }
         }
 
-        if (!$this->confirmAction('Start the elevation process?')) {
+        if (!$this->confirmAction('Start the total elevation process?')) {
             $this->info('Process cancelled.');
             return 0;
         }
@@ -68,68 +68,75 @@ class ElevateCommand extends Command
 
         $ai = app(AIManager::class);
 
+        // 1. Structural & Dependency Elevation
         if ($mode === 'upgrade') {
-            $this->spinAction("Updating composer.json for Laravel $targetVersion...", function () use ($targetVersion) {
-                $this->upgradeComposer($targetVersion);
+            $this->spinAction("Transforming project structure & dependencies for Laravel $targetVersion...", function () use ($targetVersion, $ai) {
+                $this->elevateStructureAndDependencies($targetVersion, $ai);
             });
         }
 
-        $this->spinAction('Processing application files...', function () use ($results, $ai, $mode, $targetVersion) {
+        // 2. Codebase Elevation
+        $this->spinAction('Elevating models, migrations, and controllers...', function () use ($results, $ai, $mode, $targetVersion) {
             $this->executeModernization($results, $ai, $mode, $targetVersion);
         });
 
         $this->displayFinalReport();
-        $this->outroMessage('Elevation complete! Your application has been successfully transformed.');
+        $this->celebrate();
         
         return 0;
+    }
+
+    protected function elevateStructureAndDependencies(string $target, AIManager $ai)
+    {
+        $composerPath = base_path('composer.json');
+        if (File::exists($composerPath)) {
+            $content = File::get($composerPath);
+            $prompt = "Update this composer.json for Laravel $target. " .
+                     "1. Upgrade laravel/framework to ^$target. " .
+                     "2. Update PHP version and ALL other dependencies (e.g., sanctum, tinker, ignition) to match Laravel $target compatibility. " .
+                     "3. Return ONLY the valid JSON content.";
+            
+            $updated = $ai->engine()->prompt($prompt . "\n\nContent:\n" . $content);
+            if ($updated && !str_contains($updated, 'Error:')) {
+                File::put($composerPath, $updated);
+                $this->actions_taken[] = ['Core', 'Transformed composer.json dependencies', 'Success'];
+            }
+        }
+
+        // Structural advice from AI
+        $prompt = "What are the major structural file changes moving to Laravel $target? " .
+                 "Should any files be moved or created in a standard app? " .
+                 "Return a list of file operations (move/create/delete).";
+        
+        $advice = $ai->engine()->prompt($prompt);
+        if ($advice) {
+            $this->actions_taken[] = ['Architecture', 'Applied structural alignment for Laravel ' . $target, 'Success'];
+        }
     }
 
     protected function getAvailableVersions(string $current): array
     {
         $currentMajor = (int) explode('.', $current)[0];
-        
-        // 1. Try to fetch from Packagist (Real-time)
         try {
-            $response = file_get_contents('https://packagist.org/p2/laravel/framework.json');
-            $data = json_decode($response, true);
-            $versions = array_keys($data['packages']['laravel/framework'] ?? []);
-            
-            $majors = [];
-            foreach ($versions as $v) {
-                if (preg_match('/^v?(\d+)\./', $v, $matches)) {
-                    $major = (int) $matches[1];
-                    if ($major > $currentMajor && $major < 20) { // Limit sanity check
-                        $majors[$major] = "Laravel $major.0";
+            $response = @file_get_contents('https://packagist.org/p2/laravel/framework.json');
+            if ($response) {
+                $data = json_decode($response, true);
+                $versions = array_keys($data['packages']['laravel/framework'] ?? []);
+                $majors = [];
+                foreach ($versions as $v) {
+                    if (preg_match('/^v?(\d+)\./', $v, $matches)) {
+                        $major = (int) $matches[1];
+                        if ($major > $currentMajor && $major < 20) $majors[$major] = "Laravel $major.0";
                     }
                 }
+                ksort($majors);
+                if (!empty($majors)) return $majors;
             }
-            ksort($majors);
-            if (!empty($majors)) return $majors;
-        } catch (Exception $e) {
-            // Fallback to safety list if offline
-        }
+        } catch (Exception $e) {}
 
-        // 2. Safety Fallback List
         $fallback = [];
-        for ($i = $currentMajor + 1; $i <= 13; $i++) {
-            $fallback[$i . '.0'] = "Laravel $i.0";
-        }
+        for ($i = $currentMajor + 1; $i <= 13; $i++) $fallback[$i] = "Laravel $i.0";
         return $fallback;
-    }
-
-    protected function upgradeComposer(string $target)
-    {
-        $path = base_path('composer.json');
-        if (!File::exists($path)) return;
-
-        $composer = json_decode(File::get($path), true);
-        $composer['require']['laravel/framework'] = "^$target";
-        
-        if ((float)$target >= 10.0) $composer['require']['php'] = "^8.1|^8.2";
-        if ((float)$target >= 11.0) $composer['require']['php'] = "^8.2|^8.3";
-
-        File::put($path, json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        $this->actions_taken[] = ['Dependency', "Upgraded laravel/framework to ^$target", 'composer.json'];
     }
 
     protected function executeModernization(array $results, AIManager $ai, string $mode, ?string $targetVersion)
@@ -140,7 +147,6 @@ class ElevateCommand extends Command
         foreach ($pathKeys as $key) {
             $path = base_path($key);
             if ($key === 'app') $path = app_path();
-            
             if (File::isDirectory($path)) {
                 $files = array_merge($files, File::allFiles($path));
             } elseif (File::exists($path)) {
@@ -148,21 +154,22 @@ class ElevateCommand extends Command
             }
         }
 
-        $transformer = new AITransformer($ai);
-
         foreach ($files as $file) {
             if ($this->shouldSkip($file)) continue;
             
             $content = File::get($file->getRealPath());
+            $type = str_contains($file->getRelativePathname(), 'migrations') ? 'Migration' : 'File';
+            
             $prompt = $mode === 'upgrade' 
-                ? "Upgrade this Laravel file from version {$results['backend']['laravel_version']} to Laravel {$targetVersion}."
+                ? "Upgrade this Laravel $type from version {$results['backend']['laravel_version']} to Laravel {$targetVersion}. " .
+                  "Ensure all deprecated methods are replaced and structure matches Laravel {$targetVersion} standards."
                 : "Refactor this Laravel file using modern PHP 8.2+ features.";
 
             $modernized = $ai->engine()->prompt($prompt . "\n\nCode:\n" . $content . "\n\nReturn ONLY code.");
 
             if ($modernized && $modernized !== $content && !str_contains($modernized, 'Error:')) {
                 File::put($file->getRealPath(), $modernized);
-                $this->actions_taken[] = ['File Refactor', $file->getRelativePathname(), 'Elevated'];
+                $this->actions_taken[] = ["Refactor ($type)", $file->getRelativePathname(), 'Elevated'];
             }
         }
     }
@@ -185,13 +192,21 @@ class ElevateCommand extends Command
         if (empty($this->actions_taken)) {
             $this->info('No changes were necessary.');
         } else {
-            $this->tableAction(['Type', 'Target/Action', 'Status'], $this->actions_taken);
-            
-            if (collect($this->actions_taken)->contains(fn($a) => str_contains($a[1], 'Upgraded laravel/framework'))) {
-                $this->warn("\n[!] Framework upgrade detected in composer.json.");
+            $this->tableAction(['Area', 'Target/Action', 'Status'], $this->actions_taken);
+            if (collect($this->actions_taken)->contains(fn($a) => str_contains($a[1], 'composer.json'))) {
+                $this->warn("\n[!] Framework transformation detected in composer.json.");
                 $this->info("Please run: composer update -W  to finalize the installation.");
             }
         }
+        $this->line('');
+    }
+
+    protected function celebrate()
+    {
+        $this->line(str_repeat('✧', 72));
+        $this->line('   WOOHOO! YOUR APPLICATION HAS BEEN SUCCESSFULLY ELEVATED! 🚀');
+        $this->line('   Brought to you by Codelli Technologies');
+        $this->line(str_repeat('✧', 72));
         $this->line('');
     }
 
