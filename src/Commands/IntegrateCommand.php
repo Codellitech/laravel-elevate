@@ -4,66 +4,49 @@ namespace Codellitech\Elevate\Commands;
 
 use Illuminate\Console\Command;
 use Codellitech\Elevate\Integrations\WhatsAppOTPIntegration;
+use function Laravel\Prompts\select;
+use function Laravel\Prompts\spin;
 
 class IntegrateCommand extends Command
 {
-    protected $signature = 'elevate:integrate {module? : The module to integrate}';
-    protected $description = 'Integrate enterprise features automatically.';
+    protected $signature = 'elevate:integrate';
+    protected $description = 'Integrate enterprise modules into your Laravel application.';
 
-    public function handle(WhatsAppOTPIntegration $whatsapp)
+    public function handle()
     {
-        $this->introAction('Elevate Integration Engine');
-
-        $options = [
+        $module = $this->selectAction('Select the module to integrate', [
             'whatsapp-otp' => 'WhatsApp OTP Authentication',
-            'rbac' => 'Role Based Access Control',
-            'audit-trails' => 'Audit Trails & Activity Logs',
-        ];
-
-        $module = $this->argument('module');
-
-        if (!$module) {
-            if (function_exists('Laravel\Prompts\select')) {
-                $module = \Laravel\Prompts\select('Which module would you like to integrate?', $options);
-            } else {
-                $module = $this->choice('Which module would you like to integrate?', $options, 'whatsapp-otp');
-            }
-        }
+            'rbac' => 'Role Based Access Control (Coming Soon)',
+        ]);
 
         if ($module === 'whatsapp-otp') {
-            $this->spinAction(
-                fn () => $whatsapp->install(),
-                'Installing WhatsApp OTP module...'
-            );
+            $this->spinAction('Integrating WhatsApp OTP...', function () {
+                $integration = app(WhatsAppOTPIntegration::class);
+                $integration->install();
+            });
+
+            $this->info('WhatsApp OTP integrated successfully!');
         }
 
-        $this->outroAction("Integration of {$module} complete!");
+        return 0;
     }
 
-    protected function introAction(string $message)
+    protected function selectAction($message, $options)
     {
-        if (function_exists('Laravel\Prompts\intro')) {
-            \Laravel\Prompts\intro($message);
+        if (function_exists('Laravel\Prompts\select')) {
+            return select($message, $options);
         } else {
-            $this->info($message);
+            return $this->choice($message, array_values($options), array_key_first($options));
         }
     }
 
-    protected function outroAction(string $message)
-    {
-        if (function_exists('Laravel\Prompts\outro')) {
-            \Laravel\Prompts\outro($message);
-        } else {
-            $this->info($message);
-        }
-    }
-
-    protected function spinAction(\Closure $callback, string $message)
+    protected function spinAction($message, $callback)
     {
         if (function_exists('Laravel\Prompts\spin')) {
-            return \Laravel\Prompts\spin($callback, $message);
+            return spin($callback, $message);
+        } else {
+            $this->info($message . ' (please wait)');
+            return $callback();
         }
-        $this->info($message);
-        return $callback();
     }
 }

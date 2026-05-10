@@ -18,10 +18,13 @@ class GeminiDriver implements AIDriver
     public function prompt(string $prompt, array $options = []): string
     {
         try {
+            // Industry Standard: Auto-disable SSL on local environments to prevent cURL 60
+            $verify = $this->config['verify_ssl'] ?? (app()->environment('local') ? false : true);
+
             $client = new Client([
                 'base_uri' => 'https://generativelanguage.googleapis.com/v1beta/',
                 'timeout'  => $this->config['timeout'] ?? 60,
-                'verify'   => $this->config['verify_ssl'] ?? true,
+                'verify'   => $verify,
             ]);
 
             $apiKey = $this->config['api_key'];
@@ -45,10 +48,7 @@ class GeminiDriver implements AIDriver
             $data = json_decode($response->getBody()->getContents(), true);
             return $data['candidates'][0]['content']['parts'][0]['text'] ?? '';
         } catch (\GuzzleHttp\Exception\ConnectException $e) {
-            if (str_contains($e->getMessage(), 'SSL certificate problem')) {
-                return "Error: SSL Certificate problem. Please set ELEVATE_SSL_VERIFY=false in your .env";
-            }
-            return "Error: Connection failed. " . $e->getMessage();
+            return "Error: Connection failed. If you are on local, ensure ELEVATE_SSL_VERIFY=false. " . $e->getMessage();
         } catch (Exception $e) {
             return "Error: " . $e->getMessage();
         }

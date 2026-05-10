@@ -55,8 +55,8 @@ php artisan vendor:publish --tag="elevate-config"
 ELEVATE_AI_PROVIDER=gemini
 GEMINI_API_KEY=your_key_here
 
-# For Local Development (WAMP/Windows)
-ELEVATE_SSL_VERIFY=false
+# NOTE: SSL verification is AUTOMATICALLY disabled on 'local' 
+# environments to ensure a smooth developer experience.
 ```
 
 ### 2. Run the Modernizer

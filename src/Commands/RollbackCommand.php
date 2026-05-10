@@ -7,60 +7,26 @@ use Codellitech\Elevate\Rollback\GitSnapshot;
 
 class RollbackCommand extends Command
 {
-    protected $signature = 'elevate:rollback {branch? : The backup branch to rollback to}';
-    protected $description = 'Rollback changes made by Elevate.';
+    protected $signature = 'elevate:rollback';
+    protected $description = 'Rollback the last elevation using Git snapshots.';
 
-    public function handle(GitSnapshot $git)
+    public function handle()
     {
-        $this->introAction('Elevate Rollback Engine');
+        $git = app(GitSnapshot::class);
 
-        $options = [
-            'master' => 'Main Branch',
-            'elevate-backup-latest' => 'Latest Backup',
-        ];
-
-        $branch = $this->argument('branch');
-
-        if (!$branch) {
-            if (function_exists('Laravel\Prompts\select')) {
-                $branch = \Laravel\Prompts\select('Which backup would you like to restore?', $options);
-            } else {
-                $branch = $this->choice('Which backup would you like to restore?', $options, 'master');
-            }
+        if (!$git->hasGit()) {
+            $this->error('Git not detected. Rollback unavailable.');
+            return 1;
         }
 
-        $this->spinAction(
-            fn () => $git->rollback($branch),
-            'Restoring application state...'
-        );
-
-        $this->outroAction("Application rolled back to {$branch}!");
-    }
-
-    protected function introAction(string $message)
-    {
-        if (function_exists('Laravel\Prompts\intro')) {
-            \Laravel\Prompts\intro($message);
+        $this->info('Rolling back to pre-elevation state...');
+        
+        if ($git->rollback()) {
+            $this->info('Rollback successful!');
         } else {
-            $this->info($message);
+            $this->error('Rollback failed. Please check your git status manually.');
         }
-    }
 
-    protected function outroAction(string $message)
-    {
-        if (function_exists('Laravel\Prompts\outro')) {
-            \Laravel\Prompts\outro($message);
-        } else {
-            $this->info($message);
-        }
-    }
-
-    protected function spinAction(\Closure $callback, string $message)
-    {
-        if (function_exists('Laravel\Prompts\spin')) {
-            return \Laravel\Prompts\spin($callback, $message);
-        }
-        $this->info($message);
-        return $callback();
+        return 0;
     }
 }

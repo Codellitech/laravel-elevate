@@ -12,6 +12,11 @@ class LaravelElevateServiceProvider extends ServiceProvider
 {
     public function register()
     {
+        // Absolute safety check: Never run AI logic during discovery or install
+        if ($this->isDiscoveryMode()) {
+            return;
+        }
+
         $this->mergeConfigFrom(__DIR__ . '/../config/elevate.php', 'elevate');
 
         $this->app->singleton(AIManager::class, function ($app) {
@@ -34,5 +39,15 @@ class LaravelElevateServiceProvider extends ServiceProvider
                 RollbackCommand::class,
             ]);
         }
+    }
+
+    protected function isDiscoveryMode(): bool
+    {
+        $argv = $_SERVER['argv'] ?? [];
+        $command = implode(' ', $argv);
+        
+        return str_contains($command, 'package:discover') || 
+               str_contains($command, 'vendor:publish') || 
+               str_contains($command, 'composer');
     }
 }
