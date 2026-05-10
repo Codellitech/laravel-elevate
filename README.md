@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Codellitech/laravel-elevate/main/art/dashboard.png" width="800" alt="Laravel Elevate Dashboard">
+  <img src="https://raw.githubusercontent.com/Codellitech/laravel-elevate/main/art/terminal.jpg" width="800" alt="Laravel Elevate Terminal">
 </p>
 
 <p align="center">
