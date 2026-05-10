@@ -1,11 +1,8 @@
-<h1 align="center">Codelli Technologies</h1>
-<h3 align="center">Laravel Elevate</h3>
+# Laravel Elevate
 
-<p align="center">
-    <strong>The Total AI Transformation & Migration Platform for Laravel</strong>
-</p>
+**Autonomous AI-Powered Transformation & Migration Platform for Laravel**
 
-![Laravel Elevate Terminal](art/terminal.jpg)
+![Terminal Screenshot](art/terminal.jpeg)
 
 <p align="center">
     <a href="https://packagist.org/packages/codellitech/laravel-elevate"><img src="https://img.shields.io/packagist/v/codellitech/laravel-elevate.svg?style=for-the-badge" alt="Latest Version on Packagist"></a>
