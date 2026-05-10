@@ -120,9 +120,9 @@ class ElevateCommand extends Command
         if (function_exists('Laravel\Prompts\progress')) {
             \Laravel\Prompts\progress(
                 label: 'Modernizing application files',
-                steps: count($files),
-                callback: function ($step) use ($files, $transformer) {
-                    return $this->processFile($files[$step - 1], $transformer);
+                steps: $files,
+                callback: function ($file) use ($transformer) {
+                    return $this->processFile($file, $transformer);
                 }
             );
         } else {
