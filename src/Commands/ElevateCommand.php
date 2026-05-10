@@ -9,6 +9,7 @@ use Codellitech\Elevate\Rollback\GitSnapshot;
 use Codellitech\Elevate\Transformers\AITransformer;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Exception;
 use function Laravel\Prompts\intro;
 use function Laravel\Prompts\outro;
 use function Laravel\Prompts\spin;
@@ -21,7 +22,6 @@ class ElevateCommand extends Command
     protected $signature = 'elevate {--dry-run : Preview changes without applying them}';
     protected $description = 'Elevate your Laravel application to the next level with AI.';
 
-    protected array $versions = ['5.8', '6.0', '7.0', '8.0', '9.0', '10.0', '11.0', '12.0', '13.0', '14.0'];
     protected array $actions_taken = [];
 
     public function handle()
@@ -47,14 +47,13 @@ class ElevateCommand extends Command
 
         $targetVersion = null;
         if ($mode === 'upgrade') {
-            $currentVersion = (float) $results['backend']['laravel_version'];
-            $availableTargets = array_filter($this->versions, fn($v) => (float)$v > $currentVersion);
+            $availableTargets = $this->getAvailableVersions($results['backend']['laravel_version']);
             
             if (empty($availableTargets)) {
-                $this->info('You are already on the latest supported version!');
+                $this->info('You are already on the latest available version!');
                 $mode = 'modernize';
             } else {
-                $targetVersion = $this->selectAction('Select target Laravel version', array_combine($availableTargets, array_map(fn($v) => "Laravel $v", $availableTargets)));
+                $targetVersion = $this->selectAction('Select target Laravel version', $availableTargets);
             }
         }
 
@@ -83,6 +82,39 @@ class ElevateCommand extends Command
         $this->outroMessage('Elevation complete! Your application has been successfully transformed.');
         
         return 0;
+    }
+
+    protected function getAvailableVersions(string $current): array
+    {
+        $currentMajor = (int) explode('.', $current)[0];
+        
+        // 1. Try to fetch from Packagist (Real-time)
+        try {
+            $response = file_get_contents('https://packagist.org/p2/laravel/framework.json');
+            $data = json_decode($response, true);
+            $versions = array_keys($data['packages']['laravel/framework'] ?? []);
+            
+            $majors = [];
+            foreach ($versions as $v) {
+                if (preg_match('/^v?(\d+)\./', $v, $matches)) {
+                    $major = (int) $matches[1];
+                    if ($major > $currentMajor && $major < 20) { // Limit sanity check
+                        $majors[$major] = "Laravel $major.0";
+                    }
+                }
+            }
+            ksort($majors);
+            if (!empty($majors)) return $majors;
+        } catch (Exception $e) {
+            // Fallback to safety list if offline
+        }
+
+        // 2. Safety Fallback List
+        $fallback = [];
+        for ($i = $currentMajor + 1; $i <= 13; $i++) {
+            $fallback[$i . '.0'] = "Laravel $i.0";
+        }
+        return $fallback;
     }
 
     protected function upgradeComposer(string $target)
@@ -155,7 +187,6 @@ class ElevateCommand extends Command
         } else {
             $this->tableAction(['Type', 'Target/Action', 'Status'], $this->actions_taken);
             
-            // Helpful instruction for major upgrades
             if (collect($this->actions_taken)->contains(fn($a) => str_contains($a[1], 'Upgraded laravel/framework'))) {
                 $this->warn("\n[!] Framework upgrade detected in composer.json.");
                 $this->info("Please run: composer update -W  to finalize the installation.");
