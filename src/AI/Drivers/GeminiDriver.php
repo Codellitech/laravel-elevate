@@ -44,6 +44,11 @@ class GeminiDriver implements AIDriver
 
             $data = json_decode($response->getBody()->getContents(), true);
             return $data['candidates'][0]['content']['parts'][0]['text'] ?? '';
+        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+            if (str_contains($e->getMessage(), 'SSL certificate problem')) {
+                return "Error: SSL Certificate problem. Please set ELEVATE_SSL_VERIFY=false in your .env";
+            }
+            return "Error: Connection failed. " . $e->getMessage();
         } catch (Exception $e) {
             return "Error: " . $e->getMessage();
         }

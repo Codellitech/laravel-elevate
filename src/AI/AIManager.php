@@ -12,99 +12,6 @@ use InvalidArgumentException;
 
 class AIManager extends Manager
 {
-    public function getDefaultDriver()
-    {
-        return $this->config->get('elevate.ai.default_provider', 'openai');
-    }
-
-    public function createOpenAIDriver()
-    {
-        if (app()->runningInConsole() && str_contains(implode(' ', $_SERVER['argv'] ?? []), 'package:discover')) {
-            return null;
-        }
-
-        $config = $this->config->get('elevate.ai.providers.openai', []);
-        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
-        return new OpenAIDriver($config);
-    }
-
-    public function createGeminiDriver()
-    {
-        if (app()->runningInConsole() && str_contains(implode(' ', $_SERVER['argv'] ?? []), 'package:discover')) {
-            return null;
-        }
-
-        $config = $this->config->get('elevate.ai.providers.gemini', []);
-        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
-        return new GeminiDriver($config);
-    }
-
-    public function createClaudeDriver()
-    {
-        if (app()->runningInConsole() && str_contains(implode(' ', $_SERVER['argv'] ?? []), 'package:discover')) {
-            return null;
-        }
-
-        $config = $this->config->get('elevate.ai.providers.claude', []);
-        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
-        return new ClaudeDriver($config);
-    }
-
-    public function createOllamaDriver()
-    {
-        if (app()->runningInConsole() && str_contains(implode(' ', $_SERVER['argv'] ?? []), 'package:discover')) {
-            return null;
-        }
-
-        $config = $this->config->get('elevate.ai.providers.ollama', []);
-        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
-        return new OllamaDriver($config);
-    }
-
-    public function createOpenRouterDriver()
-    {
-        $config = $this->config->get('elevate.ai.providers.openrouter');
-        return new OpenRouterDriver($config);
-    }
-
-    public function createDeepSeekDriver()
-    {
-        $config = $this->config->get('elevate.ai.providers.deepseek', []);
-        return new OpenAIDriver(array_merge($config, [
-            'base_uri' => 'https://api.deepseek.com/v1/'
-        ]));
-    }
-
-    public function createGroqDriver()
-    {
-        $config = $this->config->get('elevate.ai.providers.groq', []);
-        return new OpenAIDriver(array_merge($config, [
-            'base_uri' => 'https://api.groq.com/openai/v1/'
-        ]));
-    }
-
-    public function createMistralDriver()
-    {
-        $config = $this->config->get('elevate.ai.providers.mistral', []);
-        return new OpenAIDriver(array_merge($config, [
-            'base_uri' => 'https://api.mistral.ai/v1/'
-        ]));
-    }
-
-    public function createCohereDriver()
-    {
-        $config = $this->config->get('elevate.ai.providers.cohere', []);
-        return new OpenAIDriver(array_merge($config, [
-            'base_uri' => 'https://api.cohere.ai/v1/'
-        ]));
-    }
-
-    /**
-     * Get a driver with fallback logic.
-     *
-     * @param string|null $driver
-     * @return \Codellitech\Elevate\Contracts\AIDriver
-     */
     public function engine($driver = null)
     {
         try {
@@ -116,5 +23,78 @@ class AIManager extends Manager
             }
             throw $e;
         }
+    }
+
+    public function getDefaultDriver()
+    {
+        return $this->config->get('elevate.ai.default_provider', 'openai');
+    }
+
+    protected function createOpenAIDriver()
+    {
+        if ($this->isDiscovery()) return null;
+        $config = $this->config->get('elevate.ai.providers.openai', []);
+        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
+        return new OpenAIDriver($config);
+    }
+
+    protected function createGeminiDriver()
+    {
+        if ($this->isDiscovery()) return null;
+        $config = $this->config->get('elevate.ai.providers.gemini', []);
+        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
+        return new GeminiDriver($config);
+    }
+
+    protected function createClaudeDriver()
+    {
+        if ($this->isDiscovery()) return null;
+        $config = $this->config->get('elevate.ai.providers.claude', []);
+        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
+        return new ClaudeDriver($config);
+    }
+
+    protected function createOllamaDriver()
+    {
+        if ($this->isDiscovery()) return null;
+        $config = $this->config->get('elevate.ai.providers.ollama', []);
+        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
+        return new OllamaDriver($config);
+    }
+
+    protected function createOpenRouterDriver()
+    {
+        if ($this->isDiscovery()) return null;
+        $config = $this->config->get('elevate.ai.providers.openrouter', []);
+        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
+        return new OpenRouterDriver($config);
+    }
+
+    protected function createDeepSeekDriver()
+    {
+        if ($this->isDiscovery()) return null;
+        $config = $this->config->get('elevate.ai.providers.deepseek', []);
+        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
+        return new OpenAIDriver(array_merge($config, [
+            'base_uri' => 'https://api.deepseek.com/v1/'
+        ]));
+    }
+
+    protected function createGroqDriver()
+    {
+        if ($this->isDiscovery()) return null;
+        $config = $this->config->get('elevate.ai.providers.groq', []);
+        $config['verify_ssl'] = $this->config->get('elevate.ai.verify_ssl', true);
+        return new OpenAIDriver(array_merge($config, [
+            'base_uri' => 'https://api.groq.com/openai/v1/'
+        ]));
+    }
+
+    protected function isDiscovery(): bool
+    {
+        if (!app()->runningInConsole()) return false;
+        $argv = $_SERVER['argv'] ?? [];
+        $command = implode(' ', $argv);
+        return str_contains($command, 'package:discover') || str_contains($command, 'vendor:publish');
     }
 }
