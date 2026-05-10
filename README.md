@@ -1,5 +1,7 @@
-<h1 align="center">Codelli Technologies</h1>
-<h3 align="center">Laravel Elevate</h3>
+<h1 align="center">
+    <b>Laravel Elevate</b><br>
+    <small><b>by Codelli Technologies</b></small>
+</h1>
 
 <p align="center">
     <strong>The Total AI-Driven Transformation & Migration Platform for the Laravel Ecosystem</strong>
