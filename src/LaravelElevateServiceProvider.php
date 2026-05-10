@@ -12,19 +12,15 @@ class LaravelElevateServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        // Absolute safety check: Never run AI logic during discovery or install
+        // 1. Determine if we are in discovery mode
         if ($this->isDiscoveryMode()) {
             return;
         }
 
-        // Config Integrity Shield: Prevent array_merge crashes if config is corrupted
-        $existing = $this->app['config']->get('elevate');
-        if ($existing !== null && !is_array($existing)) {
-            $this->app['config']->set('elevate', []);
-        }
+        // 2. Load the new, hardened config file (renamed to break caches)
+        $this->mergeConfigFrom(__DIR__ . '/../config/elevate-engine.php', 'elevate');
 
-        $this->mergeConfigFrom(__DIR__ . '/../config/elevate.php', 'elevate');
-
+        // 3. Register the AI Manager as a singleton
         $this->app->singleton(AIManager::class, function ($app) {
             return new AIManager($app);
         });
@@ -36,7 +32,7 @@ class LaravelElevateServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/elevate.php' => config_path('elevate.php'),
+                __DIR__ . '/../config/elevate-engine.php' => config_path('elevate-engine.php'),
             ], 'elevate-config');
 
             $this->commands([
@@ -54,6 +50,7 @@ class LaravelElevateServiceProvider extends ServiceProvider
         
         return str_contains($command, 'package:discover') || 
                str_contains($command, 'vendor:publish') || 
-               str_contains($command, 'composer');
+               str_contains($command, 'composer') ||
+               str_contains($command, 'config:cache');
     }
 }

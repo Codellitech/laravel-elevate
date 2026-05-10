@@ -112,7 +112,7 @@ class ElevateCommand extends Command
 
     protected function executeModernization(array $results, AIManager $ai, string $mode, ?string $targetVersion)
     {
-        $pathKeys = config('elevate.paths', ['app']);
+        $pathKeys = config('elevate.paths', ['app', 'config', 'database', 'resources', 'routes']);
         $files = [];
         
         $pathMap = [
@@ -160,7 +160,7 @@ class ElevateCommand extends Command
 
     protected function shouldSkip($file): bool
     {
-        $excludes = config('elevate.exclude', []);
+        $excludes = config('elevate.exclude', ['vendor', 'node_modules', 'storage', 'bootstrap/cache']);
         $path = $file->getRelativePathname();
         foreach ($excludes as $exclude) {
             if (str_contains($path, $exclude)) return true;

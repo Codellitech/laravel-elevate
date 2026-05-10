@@ -1,21 +1,12 @@
 {
     "name": "codellitech/laravel-elevate",
-    "description": "Enterprise-grade autonomous Laravel modernization and upgrade platform.",
-    "keywords": [
-        "laravel",
-        "upgrade",
-        "modernization",
-        "ai",
-        "rector",
-        "refactoring"
-    ],
+    "description": "Autonomous AI-Driven Modernization & Upgrade Platform for Laravel",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "Codelli Technologies",
-            "email": "info@codellitech.in",
-            "homepage": "https://codellitech.in",
-            "role": "Developer"
+            "email": "info@codellitech.in"
         }
     ],
     "require": {
@@ -27,32 +18,19 @@
         "symfony/process": "^6.0|^7.0",
         "phpstan/phpstan": "^1.10"
     },
-    "suggest": {
-        "laravel/prompts": "Required for the premium interactive CLI experience (^0.1)."
-    },
     "autoload": {
         "psr-4": {
             "Codellitech\\Elevate\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Codellitech\\Elevate\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
                 "Codellitech\\Elevate\\LaravelElevateServiceProvider"
-            ],
-            "aliases": {
-                "Elevate": "Codellitech\\Elevate\\Facades\\Elevate"
-            }
+            ]
         }
     },
-    "config": {
-        "sort-packages": true
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "suggest": {
+        "laravel/prompts": "Required for the premium interactive CLI experience (^0.1)."
+    }
 }
