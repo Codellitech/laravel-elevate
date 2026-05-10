@@ -97,8 +97,7 @@ We know your codebase is your most valuable asset. That's why Elevate follows a 
 **Laravel Elevate** is an open-source initiative by **Codelli Technologies**. We specialize in high-end enterprise software, AI systems engineering, and DevOps architecture.
 
 - **Website**: [codellitech.in](https://codellitech.in)
-- **Support**: [info@codellitech.in](mailto:info@codellitech.in)
-- **Phone**: +91 91772 01462
+- **Support**: [info@codellitech.in](mailto:info@codellitech.in) | [codellitech@gmail.com](mailto:codellitech@gmail.com)
 
 ---
 
