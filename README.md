@@ -1,13 +1,22 @@
-# Laravel Elevate
+<h1 align="center">Codelli Technologies</h1>
+<h3 align="center">Laravel Elevate</h3>
 
-**Autonomous AI-Powered Transformation & Migration Platform for Laravel**
+<p align="center">
+    <strong>The Total AI-Driven Transformation & Migration Platform for the Laravel Ecosystem</strong>
+</p>
 
-![Terminal Screenshot](art/terminal.jpeg)
+<p align="center">
+  <img src="art/terminal.jpeg" width="800" alt="Laravel Elevate Terminal">
+</p>
 
 <p align="center">
     <a href="https://packagist.org/packages/codellitech/laravel-elevate"><img src="https://img.shields.io/packagist/v/codellitech/laravel-elevate.svg?style=for-the-badge" alt="Latest Version on Packagist"></a>
     <a href="https://packagist.org/packages/codellitech/laravel-elevate"><img src="https://img.shields.io/packagist/dt/codellitech/laravel-elevate.svg?style=for-the-badge" alt="Total Downloads"></a>
     <a href="https://packagist.org/packages/codellitech/laravel-elevate"><img src="https://img.shields.io/packagist/l/codellitech/laravel-elevate.svg?style=for-the-badge" alt="License"></a>
+</p>
+
+<p align="center">
+    Laravel Elevate is an enterprise-grade autonomous modernization engine designed to bridge the gap between legacy Laravel applications and the cutting edge. By leveraging advanced AI reasoning, Elevate doesn't just refactor your syntax—it transforms your entire project architecture, updates your dependency stack, and ensures your application is ready for the future of Laravel.
 </p>
 
 ---
