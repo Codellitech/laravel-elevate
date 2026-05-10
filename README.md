@@ -83,13 +83,22 @@ composer update -W
 
 ---
 
-## 📖 Commands
+## 🔌 Modules & Integrations
 
-| Command | Purpose |
-| --- | --- |
-| `php artisan elevate` | **Transform/Upgrade**: The main engine for structural and code transformation. |
-| `php artisan elevate:integrate` | **Expand**: Automatically injects enterprise modules (WhatsApp OTP, etc). |
-| `php artisan elevate:rollback` | **Revert**: Instantly return to the pre-elevation state. |
+Elevate your application beyond just code transformation. One-click inject production-ready features:
+
+| Module | Status | Description |
+| --- | --- | --- |
+| **WhatsApp OTP** | ✅ Ready | Secure phone-based authentication. |
+| **RBAC Suite** | ⏳ Coming Soon | Enterprise-grade Roles & Permissions. |
+| **SaaS Billing** | ⏳ Coming Soon | Stripe integration with subscription management. |
+| **Socialite** | ⏳ Coming Soon | Google, GitHub, and Facebook OAuth. |
+| **Filament Admin** | ⏳ Coming Soon | Automatic Admin Dashboard generation. |
+| **Impersonation** | ⏳ Coming Soon | Login as user + detailed activity logs. |
+| **Session Spy** | ⏳ Coming Soon | Microsoft Clarity-style user session replays. |
+| **Toast Notify** | ⏳ Coming Soon | Real-time popup & toast notifications. |
+| **PWA Engine** | ⏳ Coming Soon | Transform your app into a mobile PWA. |
+| **SEO Suite** | ⏳ Coming Soon | Advanced Meta, Schema, and Sitemap tools. |
 
 ---
 

@@ -5,9 +5,6 @@ namespace Codellitech\Elevate\Commands;
 use Illuminate\Console\Command;
 use Codellitech\Elevate\Integrations\WhatsAppOTPIntegration;
 use function Laravel\Prompts\select;
-use function Laravel\Prompts\info;
-use function Laravel\Prompts\table;
-use function Laravel\Prompts\outro;
 
 class IntegrateCommand extends Command
 {
@@ -26,17 +23,19 @@ class IntegrateCommand extends Command
             'stripe-saas'  => 'Stripe SaaS Subscription (Coming Soon)',
             'socialite'    => 'Socialite (Google/GitHub Logins) (Coming Soon)',
             'filament'     => 'Filament Admin Panel (Coming Soon)',
-            'audit-logs'   => 'Activity & Audit Logging (Coming Soon)',
-            'livewire-ui'  => 'Livewire Dashboard Suite (Coming Soon)',
+            'impersonate'  => 'User Impersonation & Activity Logs (Coming Soon)',
+            'session-spy'  => 'User Session Replay (Clarity Style) (Coming Soon)',
+            'notifications' => 'Toast & Popup Notifications (Coming Soon)',
+            'pwa'          => 'Progressive Web App (PWA) Support (Coming Soon)',
+            'seo-suite'    => 'Advanced SEO & Meta Suite (Coming Soon)',
         ]);
 
         if (str_contains($module, '(Coming Soon)') || $module !== 'whatsapp-otp') {
-            $this->warn("The {$module} module is currently in development. Stay tuned!");
+            $this->warn("The selected module is currently in development. Stay tuned for the next release!");
             return 0;
         }
 
         $integration = new WhatsAppOTPIntegration();
-        
         $this->info("Integrating WhatsApp OTP...");
         
         if ($integration->install()) {
@@ -64,8 +63,7 @@ class IntegrateCommand extends Command
         $this->line("\n" . str_repeat('━', 72));
         $this->line('                          INTEGRATION REPORT');
         $this->line(str_repeat('━', 72));
-        
-        $this->tableAction(['Area', 'Target/Action', 'Status'], $this->actions_taken);
+        $this->table(['Area', 'Target/Action', 'Status'], $this->actions_taken);
         $this->line('');
     }
 
@@ -99,10 +97,5 @@ class IntegrateCommand extends Command
     protected function selectAction($message, $options)
     {
         return function_exists('Laravel\Prompts\select') ? select($message, $options) : $this->choice($message, array_values($options), array_key_first($options));
-    }
-
-    protected function tableAction($headers, $rows)
-    {
-        function_exists('Laravel\Prompts\table') ? table($headers, $rows) : $this->table($headers, $rows);
     }
 }
