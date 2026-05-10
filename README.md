@@ -1,8 +1,5 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Codellitech/laravel-elevate/main/art/logo.png" width="400" alt="Laravel Elevate Logo">
-</p>
-
-<h1 align="center">Laravel Elevate</h1>
+<h1 align="center">Codelli Technologies</h1>
+<h3 align="center">Laravel Elevate</h3>
 
 <p align="center">
     <strong>Autonomous AI-Driven Modernization & Enterprise Expansion Platform</strong>
@@ -100,8 +97,8 @@ We know your codebase is your most valuable asset. That's why Elevate follows a 
 **Laravel Elevate** is an open-source initiative by **Codelli Technologies**. We specialize in high-end enterprise software, AI systems engineering, and DevOps architecture.
 
 - **Website**: [codellitech.in](https://codellitech.in)
-- **Twitter**: [@Codellitech](https://twitter.com/Codellitech)
 - **Support**: [info@codellitech.in](mailto:info@codellitech.in)
+- **Phone**: +91 91772 01462
 
 ---
 
