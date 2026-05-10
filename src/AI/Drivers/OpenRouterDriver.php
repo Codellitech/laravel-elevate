@@ -17,6 +17,7 @@ class OpenRouterDriver implements AIDriver
         $this->client = new Client([
             'base_uri' => 'https://openrouter.ai/api/v1/',
             'timeout'  => $config['timeout'] ?? 60,
+            'verify'   => config('elevate.ai.verify_ssl', true),
         ]);
     }
 

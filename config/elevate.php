@@ -61,6 +61,7 @@ return [
 
         'temperature' => 0.2,
         'token_limit' => 4096,
+        'verify_ssl' => env('ELEVATE_SSL_VERIFY', true),
     ],
 
     /*

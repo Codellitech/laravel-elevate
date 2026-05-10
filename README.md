@@ -1,80 +1,117 @@
 # Laravel Elevate
 
-**Enterprise-grade autonomous Laravel modernization and upgrade platform.**
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/codellitech/laravel-elevate.svg?style=flat-square)](https://packagist.org/packages/codellitech/laravel-elevate)
+[![Total Downloads](https://img.shields.io/packagist/dt/codellitech/laravel-elevate.svg?style=flat-square)](https://packagist.org/packages/codellitech/laravel-elevate)
+[![License](https://img.shields.io/packagist/l/codellitech/laravel-elevate.svg?style=flat-square)](https://packagist.org/packages/codellitech/laravel-elevate)
 
-## Installation
+**Laravel Elevate** is an enterprise-grade autonomous modernization and upgrade platform. Powered by state-of-the-art AI, it automatically refactors legacy code, upgrades Laravel versions, and integrates advanced enterprise features with zero manual effort.
+
+---
+
+## 🚀 Key Features
+
+- **AI-Driven Modernization**: Automatically refactor legacy PHP/Laravel syntax to modern standards.
+- **Deep Project Scanning**: Intelligent analysis of backend, frontend, and infrastructure stacks.
+- **Enterprise Integrations**: One-command injection of complex modules (e.g., WhatsApp OTP, RBAC).
+- **Universal Compatibility**: Supports Laravel versions from **5.0 all the way to 12.0+**.
+- **Safety First**: Built-in Git-based snapshot and rollback engine for non-destructive upgrades.
+- **Multi-AI Support**: Works with OpenAI, Claude, Gemini, DeepSeek, Groq, Ollama, and more.
+
+---
+
+## 📦 Installation
+
+Install the package via Composer:
 
 ```bash
 composer require codellitech/laravel-elevate
 ```
 
-## Requirements
+### Requirements
 
 - **PHP**: ^8.2 (Required for AI and modern CLI features)
 - **Laravel**: ^5.0 | ^6.0 | ^7.0 | ^8.0 | ^9.0 | ^10.0 | ^11.0 | ^12.0
 
-## Configuration
+---
 
-Publish the configuration file:
+## ⚙️ Configuration
 
+### 1. Publish Configuration
 ```bash
-php artisan vendor:publish --tag=elevate-config
+php artisan vendor:publish --tag="elevate-config"
 ```
 
-Configure your AI provider in `.env`:
+### 2. Configure Environment (.env)
+Add your preferred AI provider keys to your `.env` file:
 
 ```env
+# Primary AI Provider (openai, gemini, claude, deepseek, etc.)
 ELEVATE_AI_PROVIDER=gemini
-GEMINI_API_KEY=your-api-key
+
+# Google Gemini (Highly Recommended)
+GEMINI_API_KEY=your_gemini_key_here
+
+# OpenAI
+OPENAI_API_KEY=your_openai_key_here
+
+# Anthropic Claude
+ANTHROPIC_API_KEY=your_anthropic_key_here
+
+# DeepSeek
+DEEPSEEK_API_KEY=your_deepseek_key_here
+
+# Local Development (WAMP/Windows)
+# If you get SSL certificate errors on local, set this to false:
+ELEVATE_SSL_VERIFY=false
 ```
 
-## Usage
+---
 
-### Modernize Application
+## 🎮 Usage
 
-Run the main modernization engine:
-
+### Modernize Your Application
+Analyze your entire codebase and apply AI-driven refactoring:
 ```bash
 php artisan elevate
 ```
+*Use `--dry-run` to see proposed changes without applying them.*
 
-### Integrate Features
-
-Automatically install enterprise features:
-
+### Integrate Enterprise Modules
+Inject pre-built, production-ready modules into your app:
 ```bash
-php artisan elevate:integrate whatsapp-otp
+php artisan elevate:integrate
 ```
+Available modules include:
+- `whatsapp-otp`: Automated WhatsApp OTP authentication system.
+- `rbac`: Role-Based Access Control (Coming Soon).
+- `audit-trails`: System-wide activity logging (Coming Soon).
 
-### Rollback Changes
-
-If anything goes wrong, you can rollback to a previous state:
-
+### Safety & Rollback
+If you are unhappy with the AI changes, you can instantly revert to the pre-elevation state:
 ```bash
 php artisan elevate:rollback
 ```
 
-## Features
+---
 
-- **AI-First Architecture**: Supports OpenAI, Anthropic, Gemini, Ollama, and more.
-- **Deep Project Scanning**: Analyzes PHP, Laravel, Composer, Frontend stacks, and Infrastructure.
-- **Automated Upgrades**: Upgrades Laravel versions and modernizes syntax.
-- **Frontend Modernization**: Bootstrap to Tailwind, Vue 2 to 3, Mix to Vite.
-- **Enterprise Integrations**: WhatsApp OTP, RBAC, Audit Trails, and more.
-- **Safety First**: Git-based snapshots and rollback manifests.
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information. This package is free to use for anyone.
-
-## Credits & Support
-
-Developed and maintained by **Codelli Technologies**.
-
-- **Website**: [codellitech.in](https://codellitech.in)
-- **Email**: info@codellitech.in
-- **Phone**: +919177201462
-- **Address**: Hyderabad, India
+## 🛡️ Security & Safety
+- **Git Snapshots**: Before any modification, Elevate creates a temporary Git branch (`elevate-backup-TIMESTAMP`).
+- **Non-Destructive**: AI only modifies files within your configured `paths` (default: `app`, `routes`, `config`, etc.).
+- **Excluded Paths**: Directories like `vendor` and `node_modules` are automatically ignored.
 
 ---
-Built with ❤️ by [Codelli Technologies](https://codellitech.in)
+
+## 🤝 Support & Contribution
+
+Built with ❤️ by **[Codelli Technologies](https://codellitech.in)**.
+
+- **Website**: [codellitech.in](https://codellitech.in)
+- **Email**: [info@codellitech.in](mailto:info@codellitech.in)
+- **Support**: +91 91772 01462
+
+For bugs and feature requests, please [open an issue on GitHub](https://github.com/Codellitech/laravel-elevate/issues).
+
+---
+
+## 📄 License
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.

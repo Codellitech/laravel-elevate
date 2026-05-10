@@ -17,6 +17,7 @@ class GeminiDriver implements AIDriver
         $this->client = new Client([
             'base_uri' => 'https://generativelanguage.googleapis.com/v1beta/',
             'timeout'  => $config['timeout'] ?? 60,
+            'verify'   => config('elevate.ai.verify_ssl', true),
         ]);
     }
 
