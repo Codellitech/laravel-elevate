@@ -99,10 +99,21 @@ class ElevateCommand extends Command
 
     protected function executeModernization(array $results, AIManager $ai)
     {
-        $paths = config('elevate.paths', [app_path()]);
+        $pathKeys = config('elevate.paths', ['app']);
         $files = [];
         
-        foreach ($paths as $path) {
+        $pathMap = [
+            'app' => app_path(),
+            'config' => config_path(),
+            'database' => database_path(),
+            'resources' => resource_path(),
+            'routes' => base_path('routes'),
+            'tests' => base_path('tests'),
+        ];
+
+        foreach ($pathKeys as $key) {
+            $path = $pathMap[$key] ?? base_path($key);
+            
             if (File::isDirectory($path)) {
                 $files = array_merge($files, File::allFiles($path));
             } elseif (File::exists($path)) {

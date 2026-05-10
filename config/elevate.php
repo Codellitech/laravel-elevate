@@ -73,12 +73,12 @@ return [
     */
 
     'paths' => [
-        'app' => app_path(),
-        'config' => config_path(),
-        'database' => database_path(),
-        'resources' => resource_path(),
-        'routes' => base_path('routes'),
-        'tests' => base_path('tests'),
+        'app',
+        'config',
+        'database',
+        'resources',
+        'routes',
+        'tests',
     ],
 
     /*
@@ -126,8 +126,8 @@ return [
     'safety' => [
         'git_snapshot' => true,
         'dry_run' => false,
-        'backup_path' => storage_path('elevate/backups'),
-        'history_path' => storage_path('elevate/history'),
+        'backup_path' => 'storage/elevate/backups',
+        'history_path' => 'storage/elevate/history',
     ],
 
 ];
