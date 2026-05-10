@@ -27,30 +27,30 @@ class ElevateCommand extends Command
         $this->displayBranding();
 
         if (!$git->hasGit()) {
-            warning('Git not detected. Snapshots and rollbacks will be unavailable.');
-            if (!confirm('Proceed without safety snapshots?')) {
+            $this->warn('Git not detected. Snapshots and rollbacks will be unavailable.');
+            if (!$this->confirmAction('Proceed without safety snapshots?')) {
                 return;
             }
         } elseif (!$git->isClean() && !$this->option('dry-run')) {
-            if (!confirm('Your git working directory is not clean. Continue anyway?')) {
+            if (!$this->confirmAction('Your git working directory is not clean. Continue anyway?')) {
                 return;
             }
         }
 
-        $scanResults = spin(
+        $scanResults = $this->spinAction(
             fn () => $scanner->scan(),
             'Scanning project architecture...'
         );
 
         $this->displaySummary($scanResults);
 
-        if (!confirm('Proceed with AI-driven modernization?')) {
-            outro('Modernization cancelled.');
+        if (!$this->confirmAction('Proceed with AI-driven modernization?')) {
+            $this->outroAction('Modernization cancelled.');
             return;
         }
 
         if (!$this->option('dry-run')) {
-            spin(
+            $this->spinAction(
                 fn () => $git->snapshot(),
                 'Creating safety snapshot...'
             );
@@ -67,24 +67,43 @@ class ElevateCommand extends Command
         $this->line('<fg=cyan;options=bold>               LARAVEL ELEVATE by Codellitech</>');
         $this->line('<fg=cyan>                   AI Modernization Platform</>');
         $this->line('<fg=cyan>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</>');
-        intro('Elevating your application architecture...');
+        
+        if (function_exists('Laravel\Prompts\intro')) {
+            \Laravel\Prompts\intro('Elevating your application architecture...');
+        } else {
+            $this->info('Elevating your application architecture...');
+        }
     }
 
     protected function displaySummary(array $results)
     {
-        info('Architecture Summary:');
+        $this->info('Architecture Summary:');
         
-        table(
-            ['Component', 'Status/Value'],
-            [
-                ['Laravel Version', $results['backend']['laravel_version']],
-                ['PHP Version', $results['backend']['php_version']],
-                ['Bundler', $results['frontend']['bundler']],
-                ['CSS Framework', $results['frontend']['css_framework']],
-                ['JS Framework', $results['frontend']['js_framework']],
-                ['Modernization Needed', $results['frontend']['modernization_needed'] ? 'Yes' : 'No'],
-            ]
-        );
+        if (function_exists('Laravel\Prompts\table')) {
+            \Laravel\Prompts\table(
+                ['Component', 'Status/Value'],
+                [
+                    ['Laravel Version', $results['backend']['laravel_version']],
+                    ['PHP Version', $results['backend']['php_version']],
+                    ['Bundler', $results['frontend']['bundler']],
+                    ['CSS Framework', $results['frontend']['css_framework']],
+                    ['JS Framework', $results['frontend']['js_framework']],
+                    ['Modernization Needed', $results['frontend']['modernization_needed'] ? 'Yes' : 'No'],
+                ]
+            );
+        } else {
+            $this->table(
+                ['Component', 'Status/Value'],
+                [
+                    ['Laravel Version', $results['backend']['laravel_version']],
+                    ['PHP Version', $results['backend']['php_version']],
+                    ['Bundler', $results['frontend']['bundler']],
+                    ['CSS Framework', $results['frontend']['css_framework']],
+                    ['JS Framework', $results['frontend']['js_framework']],
+                    ['Modernization Needed', $results['frontend']['modernization_needed'] ? 'Yes' : 'No'],
+                ]
+            );
+        }
     }
 
     protected function executeModernization(array $results, AIManager $ai)
@@ -101,36 +120,82 @@ class ElevateCommand extends Command
         }
 
         if (empty($files)) {
-            note('No files found to modernize.');
+            $this->noteAction('No files found to modernize.');
             return;
         }
 
         $transformer = new \Codellitech\Elevate\Transformers\AITransformer($ai);
 
-        progress(
-            label: 'Modernizing application files',
-            steps: count($files),
-            callback: function ($step) use ($files, $transformer) {
-                $file = $files[$step - 1];
-                $path = $file->getRealPath();
-                
-                if ($this->shouldSkip($path)) {
-                    return "Skipped: " . $file->getRelativePathname();
+        if (function_exists('Laravel\Prompts\progress')) {
+            \Laravel\Prompts\progress(
+                label: 'Modernizing application files',
+                steps: count($files),
+                callback: function ($step) use ($files, $transformer) {
+                    return $this->processFile($files[$step - 1], $transformer);
                 }
-
-                $content = File::get($path);
-                $modernized = $transformer->transform($content, $path);
-
-                if ($modernized && $modernized !== $content && !$this->option('dry-run')) {
-                    File::put($path, $modernized);
-                    return "Modernized: " . $file->getRelativePathname();
-                }
-
-                return "Checked: " . $file->getRelativePathname();
+            );
+        } else {
+            $this->info('Modernizing application files...');
+            foreach ($files as $file) {
+                $this->line($this->processFile($file, $transformer));
             }
-        );
+        }
 
-        note('AI reasoning: Successfully analyzed ' . count($files) . ' files and applied modernization patterns where necessary.');
+        $this->noteAction('AI reasoning: Successfully analyzed ' . count($files) . ' files and applied modernization patterns where necessary.');
+    }
+
+    protected function processFile($file, $transformer)
+    {
+        $path = $file->getRealPath();
+        
+        if ($this->shouldSkip($path)) {
+            return "Skipped: " . $file->getRelativePathname();
+        }
+
+        $content = File::get($path);
+        $modernized = $transformer->transform($content, $path);
+
+        if ($modernized && $modernized !== $content && !$this->option('dry-run')) {
+            File::put($path, $modernized);
+            return "Modernized: " . $file->getRelativePathname();
+        }
+
+        return "Checked: " . $file->getRelativePathname();
+    }
+
+    protected function confirmAction(string $message): bool
+    {
+        if (function_exists('Laravel\Prompts\confirm')) {
+            return \Laravel\Prompts\confirm($message);
+        }
+        return $this->confirm($message, true);
+    }
+
+    protected function spinAction(\Closure $callback, string $message)
+    {
+        if (function_exists('Laravel\Prompts\spin')) {
+            return \Laravel\Prompts\spin($callback, $message);
+        }
+        $this->info($message);
+        return $callback();
+    }
+
+    protected function outroAction(string $message)
+    {
+        if (function_exists('Laravel\Prompts\outro')) {
+            \Laravel\Prompts\outro($message);
+        } else {
+            $this->info($message);
+        }
+    }
+
+    protected function noteAction(string $message)
+    {
+        if (function_exists('Laravel\Prompts\note')) {
+            \Laravel\Prompts\note($message);
+        } else {
+            $this->line("<fg=yellow>{$message}</>");
+        }
     }
 
     protected function shouldSkip(string $path): bool
