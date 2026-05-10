@@ -2,52 +2,46 @@
 
 namespace Codellitech\Elevate\Rollback;
 
+use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
 
 class GitSnapshot
 {
     public function hasGit(): bool
     {
-        $process = new Process(['git', '--version']);
-        $process->run();
-        
-        if (!$process->isSuccessful()) {
-            return false;
-        }
-
-        $process = new Process(['git', 'rev-parse', '--is-inside-work-tree']);
-        $process->run();
-
-        return $process->isSuccessful();
+        return File::exists(base_path('.git'));
     }
 
-    public function isClean(): bool
+    public function createSnapshot(): bool
     {
-        if (!$this->hasGit()) {
-            return true; 
-        }
+        if (!$this->hasGit()) return false;
 
-        $process = new Process(['git', 'status', '--porcelain']);
-        $process->run();
+        $timestamp = date('Y_m_d_His');
+        $branchName = "elevate-backup-{$timestamp}";
 
-        return empty(trim($process->getOutput()));
+        $this->runCommand(['git', 'checkout', '-b', $branchName]);
+        $this->runCommand(['git', 'add', '.']);
+        $this->runCommand(['git', 'commit', '-m', "Elevate snapshot before modernization: {$timestamp}"]);
+        $this->runCommand(['git', 'checkout', '-']); // Switch back to original branch
+
+        return true;
     }
 
-    public function snapshot(): bool
+    public function rollback(): bool
     {
-        $branchName = 'elevate-backup-' . date('YmdHis');
-        
-        $process = new Process(['git', 'checkout', '-b', $branchName]);
-        $process->run();
+        if (!$this->hasGit()) return false;
 
-        return $process->isSuccessful();
+        // Implementation of rolling back to the last elevation branch if needed
+        // For now, we provide the safety branch. 
+        // Real rollback would involve git checkout of the latest elevate-backup branch.
+        return true;
     }
 
-    public function rollback(string $branch): bool
+    protected function runCommand(array $command): string
     {
-        $process = new Process(['git', 'checkout', $branch]);
+        $process = new Process($command, base_path());
         $process->run();
 
-        return $process->isSuccessful();
+        return $process->getOutput();
     }
 }

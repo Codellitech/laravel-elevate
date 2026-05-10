@@ -3,7 +3,6 @@
 namespace Codellitech\Elevate\Integrations;
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Artisan;
 
 class WhatsAppOTPIntegration
 {
@@ -30,6 +29,10 @@ class WhatsAppOTPIntegration
         $path = database_path("migrations/{$timestamp}_create_whatsapp_otps_table.php");
         File::ensureDirectoryExists(dirname($path));
         
+        // Prevent duplicate migrations if run multiple times
+        $existing = File::glob(database_path('migrations/*_create_whatsapp_otps_table.php'));
+        if (count($existing) > 0) return;
+
         $content = "<?php\n\nuse Illuminate\Database\Migrations\Migration;\nuse Illuminate\Database\Schema\Blueprint;\nuse Illuminate\Support\Facades\Schema;\n\nreturn new class extends Migration {\n    public function up()\n    {\n        Schema::create('whatsapp_otps', function (Blueprint \$table) {\n            \$table->id();\n            \$table->string('phone_number');\n            \$table->string('otp');\n            \$table->timestamp('expires_at');\n            \$table->timestamps();\n        });\n    }\n};";
 
         File::put($path, $content);
@@ -39,6 +42,8 @@ class WhatsAppOTPIntegration
     {
         $path = app_path('Http/Controllers/Auth/WhatsAppOTPController.php');
         File::ensureDirectoryExists(dirname($path));
+
+        if (File::exists($path)) return;
 
         $content = "<?php\n\nnamespace App\Http\Controllers\Auth;\n\nuse App\Http\Controllers\Controller;\nuse Illuminate\Http\Request;\n\nclass WhatsAppOTPController extends Controller\n{\n    public function send(Request \$request)\n    {\n        // Logic to send OTP via WhatsApp\n    }\n\n    public function verify(Request \$request)\n    {\n        // Logic to verify OTP\n    }\n}";
 
@@ -50,6 +55,8 @@ class WhatsAppOTPIntegration
         $path = app_path('Models/WhatsAppOTP.php');
         File::ensureDirectoryExists(dirname($path));
 
+        if (File::exists($path)) return;
+
         $content = "<?php\n\nnamespace App\Models;\n\nuse Illuminate\Database\Eloquent\Model;\n\nclass WhatsAppOTP extends Model\n{\n    protected \$fillable = ['phone_number', 'otp', 'expires_at'];\n}";
 
         File::put($path, $content);
@@ -58,8 +65,13 @@ class WhatsAppOTPIntegration
     protected function updateRoutes()
     {
         $path = base_path('routes/api.php');
+        if (!File::exists($path)) return;
+
         $route = "\nRoute::post('auth/whatsapp/send', [App\Http\Controllers\Auth\WhatsAppOTPController::class, 'send']);\nRoute::post('auth/whatsapp/verify', [App\Http\Controllers\Auth\WhatsAppOTPController::class, 'verify']);\n";
         
+        $content = File::get($path);
+        if (str_contains($content, 'auth/whatsapp/send')) return;
+
         File::append($path, $route);
     }
 }

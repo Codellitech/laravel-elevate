@@ -17,6 +17,12 @@ class LaravelElevateServiceProvider extends ServiceProvider
             return;
         }
 
+        // Config Integrity Shield: Prevent array_merge crashes if config is corrupted
+        $existing = $this->app['config']->get('elevate');
+        if ($existing !== null && !is_array($existing)) {
+            $this->app['config']->set('elevate', []);
+        }
+
         $this->mergeConfigFrom(__DIR__ . '/../config/elevate.php', 'elevate');
 
         $this->app->singleton(AIManager::class, function ($app) {
