@@ -49,7 +49,7 @@ class ElevateCommand extends Command
 
         $this->executeModernization($scanResults, $ai);
 
-        outro('Laravel Elevate: Modernization complete! Check the history logs for details.');
+        $this->outroAction('Laravel Elevate: Modernization complete! Check the history logs for details.');
     }
 
     protected function displayBranding()
